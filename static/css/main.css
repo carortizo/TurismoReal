@@ -1,0 +1,62 @@
+
+body{
+  background-color: darkorange;
+}
+.row {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+#link{
+  color:white; 
+}
+#link:hover{
+  color:gray;
+}
+input{
+  background-color: darkorange;
+  color:white;
+  border: none;
+  border-bottom: 1px solid white;
+}
+input:hover{
+  background-color: orange;
+}
+
+input:focus{
+  background-color: orange;
+}
+#button{
+  background-color: orange;
+  border:none;
+}
+
+#button:hover{
+  background-color: rgb(253, 194, 84);
+}
+
+
+#a1{
+  background-color: white;
+  color: black;
+  
+}
+
+
+label{
+  text-align: center;
+  color: white;
+}
+#logo{
+  max-width: 400px;
+}
+#logo2{
+  max-width: 200px;
+}
+h1{
+    text-align: center;
+    color:white;
+}
+#account{
+  text-align: left;
+  color:white;
+}

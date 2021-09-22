@@ -1,0 +1,39 @@
+
+{% extends 'core/main.html' %}
+{% load static %}
+{% block content %}
+
+<h1 ></h1><br><br>
+
+    <div class="container-sm text-center">
+        <img id="logo" class="img-fluid" src="{% static '/img/logohireswhiteoutline.png'%}" alt=""></img>
+        <h3 style="color:white;">Registarte para continuar!</h3>
+          <form method="POST" action="" autocomplete="off">
+          {% csrf_token %}
+            {{form.username}}<br><br>
+            {{form.email}}<br><br>
+            {{form.password1}}<br><br>
+            {{form.password2}}<br><br>
+              <input type="submit" name="Registrarse" value="Registrarse" id="button">
+              <!--<input type="text"  placeholder="Correo" id="correo" name="correo" required><br><br>-->
+              <!--<input type="password"  placeholder="Contraseña" id="contraseña" name="contraseña" required><br><br>-->
+              <!--<input type="button" value="Iniciar Sesión" href="pages/home.html"><a  href="pages/home.html">Home</a><br><br>-->
+              <!--<a href={%url 'home'%} class="btn btn-md btn-primary" id="button">Iniciar Sesión</a><br><br>-->
+        </form>
+        {{form.errors}}<br>
+          <a href={%url 'login'%} id="link">¿Ya tienes una cuenta?</a><br><br>
+        </div>
+
+    <script>
+    var form_fields = document.getElementsByTagName('input')
+    form_fields[1].placeholder="Usuario..";
+    form_fields[2].placeholder="Correo..";
+    form_fields[3].placeholder="Contraseña..";
+    form_fields[4].placeholder="Confirmar Contraseña..";
+
+ 
+    </script>
+        
+{% endblock  %}
+
+    

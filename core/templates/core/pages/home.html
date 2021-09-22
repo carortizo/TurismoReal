@@ -1,0 +1,74 @@
+
+{% extends 'core/main.html' %}
+{% load static %}
+{% block content %}
+
+<br>
+    
+    <div class="row"> 
+      <div class="col-11">
+      <h2 id="account">👤 {{request.user}} </h2></div>
+      <div class="col-1">
+      <a href={%url 'logout'%}><img  class=" mx-auto" src="{% static '/img/powerverysmallwhite.png'%}"></img></a></div>
+    </div>
+
+    <div class="text-center "><img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></div>
+    <div class="container text-center ">
+    <h1>Departamentos</h1>
+
+    <div class="card-group">
+    <div class="card">
+      <img src="{% static '/img/valparaiso.jpg'%}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Valparaiso</h5>
+        <p class="card-text">$15.000/Noche</p>
+      </div>
+    </div>
+    <div class="card">
+      <img <img src="{% static '/img/la serena.jpg'%}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">La Serena</h5>
+        <p class="card-text">$15.000/Noche</p>
+      </div>
+    </div>
+    <div class="card">
+      <img src="{% static '/img/viña del mar.jpg'%}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Viña del Mar</h5>
+        <p class="card-text">$15.000/Noche</p>
+      </div>
+    </div>
+    </div>
+
+    <br><br>
+      <h1>Tours</h1>
+    <div class="card-group">
+    <div class="card">
+      <img src="{% static '/img/valparaiso.jpg'%}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Valparaiso</h5>
+        <p class="card-text">$20.000</p>
+      </div>
+    </div>
+    <div class="card">
+      <img <img src="{% static '/img/la serena.jpg'%}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">La Serena</h5>
+        <p class="card-text">$25.000</p>
+      </div>
+    </div>
+    <div class="card">
+      <img src="{% static '/img/viña del mar.jpg'%}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Viña del Mar</h5>
+        <p class="card-text">$17.000</p>
+      </div>
+    </div>
+    </div>
+      <br><br>
+    </div>
+
+{% endblock  %}
+
+
+    
