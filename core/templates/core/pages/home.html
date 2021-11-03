@@ -17,56 +17,23 @@
     <h1>Departamentos</h1>
 
     <div class="card-group">
-    <div class="card">
-      <img src="{% static '/img/valparaiso.jpg'%}" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Valparaiso</h5>
-        <p class="card-text">$15.000/Noche</p>
-      </div>
-    </div>
-    <div class="card">
-      <img <img src="{% static '/img/la serena.jpg'%}" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">La Serena</h5>
-        <p class="card-text">$15.000/Noche</p>
-      </div>
-    </div>
-    <div class="card">
-      <img src="{% static '/img/viña del mar.jpg'%}" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Viña del Mar</h5>
-        <p class="card-text">$15.000/Noche</p>
-      </div>
-    </div>
-    </div>
 
-    <br><br>
-      <h1>Tours</h1>
-    <div class="card-group">
+    {%for i in deptos%}
     <div class="card">
-      <img src="{% static '/img/valparaiso.jpg'%}" class="card-img-top" alt="...">
+      <img src="data:image/jpeg;base64,base64.b64encode({{i.img}}).decode()" class="card-img-top" alt="...">
       <div class="card-body">
-        <h5 class="card-title">Valparaiso</h5>
-        <p class="card-text">$20.000</p>
+      <h5 class="card-title">{{i.zonas_id_zonas}}</h5>
+        <h5 class="card-title">{{i.direccion}}</h5>
+        <p class="card-text">${{i.precio}}/Noche</p>
+        <form method="POST" action="" id="arriendoForm">
+        {% csrf_token %}
+        <button type="submit" name="arrendar" value="{{i.id_depto}}" form="arriendoForm" id="button">Ver</button>
       </div>
     </div>
-    <div class="card">
-      <img <img src="{% static '/img/la serena.jpg'%}" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">La Serena</h5>
-        <p class="card-text">$25.000</p>
-      </div>
-    </div>
-    <div class="card">
-      <img src="{% static '/img/viña del mar.jpg'%}" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Viña del Mar</h5>
-        <p class="card-text">$17.000</p>
-      </div>
-    </div>
-    </div>
-      <br><br>
-    </div>
+    {%endfor%}
+    </form>
+
+  
 
 {% endblock  %}
 

@@ -10,10 +10,14 @@
         <h3 style="color:white;">Registarte para continuar!</h3>
           <form method="POST" action="" autocomplete="off">
           {% csrf_token %}
+            {{form.rut}}<br><br>
             {{form.username}}<br><br>
+            {{form.apellidos}}<br><br>
+            {{form.telefono}}<br><br>
             {{form.email}}<br><br>
             {{form.password1}}<br><br>
             {{form.password2}}<br><br>
+
               <input type="submit" name="Registrarse" value="Registrarse" id="button">
               <!--<input type="text"  placeholder="Correo" id="correo" name="correo" required><br><br>-->
               <!--<input type="password"  placeholder="Contraseña" id="contraseña" name="contraseña" required><br><br>-->
@@ -26,10 +30,13 @@
 
     <script>
     var form_fields = document.getElementsByTagName('input')
-    form_fields[1].placeholder="Usuario..";
-    form_fields[2].placeholder="Correo..";
-    form_fields[3].placeholder="Contraseña..";
-    form_fields[4].placeholder="Confirmar Contraseña..";
+    form_fields[1].placeholder="Rut..";
+    form_fields[2].placeholder="Nombre..";
+    form_fields[3].placeholder="Apellidos..";
+    form_fields[4].placeholder="Telefono..";
+    form_fields[5].placeholder="Correo..";
+    form_fields[6].placeholder="Contraseña..";
+    form_fields[7].placeholder="Confirmar Contraseña..";
 
  
     </script>

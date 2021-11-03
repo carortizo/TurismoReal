@@ -3,10 +3,15 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 
-#from .models import *
+from .models import *
 
 class CreateUserForm(UserCreationForm):
+    rut = forms.IntegerField()
+    telefono = forms.IntegerField()
+    apellidos = forms.CharField(max_length=75)
+    
     class Meta:
         model = User
-        fields= ['username','email','password1','password2']
+        fields= ['rut','username','apellidos','telefono','email','password1','password2']
+
 
