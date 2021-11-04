@@ -14,6 +14,23 @@
 
     <div class="text-center "><img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></div>
     <div class="container text-center ">
+    <h1>Reserva</h1>
+    <div class="card-group">
+    {%for i in reserv2%}
+      <div class="card">
+        <img src="data:image/jpeg;base64,base64.b64encode({{i.departamento_id_depto.img}}).decode()" class="card-img-top" alt="...">
+        <div class="card-body">
+        <h5 class="card-title">{{i.departamento_id_depto.zonas_id_zonas}}</h5>
+          <h5 class="card-title">{{i.departamento_id_depto.direccion}}</h5>
+          <p class="card-text">${{i.pago_reserva}} a pagar.</p>
+          <form method="POST" action="" id="cancelForm">
+          {% csrf_token %}
+          <button type="submit" name="cancelar" value="{{i.id_reservas}}" form="cancelForm" id="button">Anular Reserva</button>
+          </form>
+        </div>
+      </div>
+    {%endfor%}
+    </div>
     <h1>Departamentos</h1>
 
     <div class="card-group">
@@ -24,15 +41,15 @@
       <div class="card-body">
       <h5 class="card-title">{{i.zonas_id_zonas}}</h5>
         <h5 class="card-title">{{i.direccion}}</h5>
-        <p class="card-text">${{i.precio}}/Noche</p>
+        <p class="card-text">${{i.precio}}/Día.</p>
         <form method="POST" action="" id="arriendoForm">
         {% csrf_token %}
         <button type="submit" name="arrendar" value="{{i.id_depto}}" form="arriendoForm" id="button">Ver</button>
+        </form>
       </div>
     </div>
     {%endfor%}
-    </form>
-
+    </div>
   
 
 {% endblock  %}
