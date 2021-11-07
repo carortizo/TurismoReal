@@ -54,7 +54,7 @@ class Cliente(models.Model):
     nombre = models.CharField(max_length=75)
     apellidos = models.CharField(max_length=75)
     telefono = models.BigIntegerField()
-    correo = models.CharField(max_length=75)
+    correo = models.EmailField(verbose_name="email", max_length=60,unique=True)
     contraseña = models.CharField(max_length=75)
 
     def __str__(self):

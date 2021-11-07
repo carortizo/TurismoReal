@@ -8,6 +8,7 @@ import cx_Oracle
 
 from django.contrib.auth import authenticate, login, logout
 
+
 from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required
@@ -27,12 +28,14 @@ def registerPage(request):
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()
+            User.objects.create_user(username=form.cleaned_data.get('email'), password=form.cleaned_data.get('password1'), first_name=form.cleaned_data.get('username'),last_name=form.cleaned_data.get('apellidos'))
+            #form.save()
             Cliente.objects.create(rut=form.cleaned_data.get('rut'),nombre=form.cleaned_data.get('username'),apellidos=form.cleaned_data.get('apellidos'),telefono=form.cleaned_data.get('telefono'),correo=form.cleaned_data.get('email'),contraseña=form.cleaned_data.get('password1'))
-            user= form.cleaned_data.get('username')
+            user= form.cleaned_data.get('email')
+            name=form.cleaned_data.get('username')
             my_group = Group.objects.get(name='user') 
             my_group.user_set.add(User.objects.get(username=user).pk)
-            messages.success(request,'Cuenta creada para ' + user)
+            messages.success(request,'Cuenta creada para ' + name)
 
             return redirect('login')
 
@@ -52,7 +55,7 @@ def loginPage(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.info(request,'Usuario o Contraseña Incorrecto(s)')
+            messages.info(request,'Correo o Contraseña Incorrecto(s)')
     context={}
     return render(request,'core/pages/login.html',context)
 
@@ -88,7 +91,7 @@ def arriendo(request):
             idre=((Reservas.objects.all().count())+1)
             transp=((Transporte.objects.all().count())+1)
             pric=0
-            rut=(Cliente.objects.get(nombre=request.user).rut)
+            rut=(Cliente.objects.get(correo=request.user).rut)
             if form.cleaned_data.get('tour'):
                 tur='Si'
                 pric=+(5000*((form.cleaned_data.get('num_acomp')+1)))
@@ -137,8 +140,8 @@ def home(request):
     reserv=0
     reserv2=[]
     reserv3=[]
-    if Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(nombre=request.user).rut)).count()>0:
-        reserv2= (Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(nombre=request.user).rut)))
+    if Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(correo=request.user).rut)).count()>0:
+        reserv2= (Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(correo=request.user).rut)))
         #queries = [Q(pk=value) for value in reserv2]
         #query = queries.pop()
         #for item in queries:
