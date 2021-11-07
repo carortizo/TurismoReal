@@ -1,4 +1,5 @@
 from django.urls import path
+from django.urls.conf import include
 from . import views
 
 urlpatterns = [
@@ -9,4 +10,5 @@ urlpatterns = [
     path('register/', views.registerPage, name="register"),
     path('pswd/', views.pswd, name="pswd"),
     path('arriendo/', views.arriendo,name="arriendo"),
+    path('', include('pwa.urls')),
 ]

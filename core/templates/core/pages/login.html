@@ -8,7 +8,7 @@
         <img id="logo" class="img-fluid" src="{% static '/img/logohireswhiteoutline.png'%}" alt=""></img>
           <form  method="POST" action="" autocomplete="off">
             {% csrf_token %}
-              <input type="text"  placeholder="Usuario.." id="usuario" name="username" required><br><br>
+              <input type="text"  placeholder="Correo.." id="usuario" name="username" required><br><br>
               <input type="password"  placeholder="Contraseña.." id="contraseña" name="password" required><br><br>
               <input type="submit" name="Iniciar Sesión" value="Iniciar Sesión" id="button">
               <!--<input type="button" value="Iniciar Sesión" href="pages/home.html"><a  href="pages/home.html">Home</a><br><br>-->

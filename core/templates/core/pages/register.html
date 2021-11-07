@@ -7,7 +7,7 @@
 
     <div class="container-sm text-center">
         <img id="logo" class="img-fluid" src="{% static '/img/logohireswhiteoutline.png'%}" alt=""></img>
-        <h3 style="color:white;">Registarte para continuar!</h3>
+        <h3 style="color:white;">Regístrate para continuar!</h3>
           <form method="POST" action="" autocomplete="off">
           {% csrf_token %}
             {{form.rut}}<br><br>
@@ -32,8 +32,8 @@
     var form_fields = document.getElementsByTagName('input')
     form_fields[1].placeholder="Rut..";
     form_fields[2].placeholder="Nombre..";
-    form_fields[3].placeholder="Apellidos..";
-    form_fields[4].placeholder="Telefono..";
+    form_fields[3].placeholder="Apellido(s)..";
+    form_fields[4].placeholder="Teléfono..";
     form_fields[5].placeholder="Correo..";
     form_fields[6].placeholder="Contraseña..";
     form_fields[7].placeholder="Confirmar Contraseña..";

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-())jbnl$=s#wj%&bnsylp(+y0tvx)77)8@lzlkoti2!$^bw2l_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ALLOWED_HOSTS = ['127.0.0.1', 'localhost','192.168.100.6']
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'pwa',
 ]
 
 MIDDLEWARE = [
@@ -139,3 +140,23 @@ MEDIA_ROOT = Path.joinpath(BASE_DIR,'static/img')
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+PWA_APP_NAME = "TurismoReal"
+PWA_APP_DESCRIPTION = "Página de reserva de departamentos"
+PWA_APP_THEME_COLOR = "#ff9900"
+PWA_APP_BACKGROUND_COLOR = "#ff9900"
+PWA_APP_ICONS = [
+    {
+        "src": "/static/img/iconwhiteblack.png",
+        "sizes":"300x300"
+    }
+]
+
+PWA_APP_ICONS_APPLE = [
+    {
+        "src": "/static/img/iconwhiteblack.png",
+        "sizes":"300x300"
+    }
+]
+
+PWA_SERVICE_WORKER_PATH = Path.joinpath(BASE_DIR,"serviceworker.js")
