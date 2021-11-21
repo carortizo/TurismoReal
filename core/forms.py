@@ -21,12 +21,11 @@ class DateInput(forms.DateInput):
 
 
 class ReservaForm(forms.ModelForm):
-    tour = forms.BooleanField(required=False)
-    transport= forms.BooleanField(required=False)
+
     class Meta:
         model = Reservas
-        fields = ("num_acomp","fecha_entrada","fecha_salida","metodo_pago_id_met_pago",'tour','transport')
-        widgets={'fecha_entrada':DateInput(),'fecha_salida':DateInput()}
+        fields = ("metodo_pago_id_met_pago",)
+        
 
 
 

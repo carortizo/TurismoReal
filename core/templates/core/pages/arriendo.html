@@ -31,12 +31,64 @@
         
        <form method="POST" action="" autocomplete="off">
           {% csrf_token %}
+            N° de Acompañantes: <input type="number" id="acomp" name="acomp" value="0" min="0" max="5" onchange="calcSum()"><br><br> 
+            Fecha Entrada: <input type="date" id="entrada" name="entrada" required onchange="calcSum()">
+            Fecha Salida: <input type="date" id="salida" name="salida" required onchange="calcSum()"><br><br>
+            Metodo de Pago: {{form.metodo_pago_id_met_pago}}<br><br>
+            Servicios Extra:<br> Tour? <input type="checkbox" id="tour" name="tour" onchange="calcSum()"> Transporte? <input type="checkbox" id="transport" name="transport" onchange="calcSum()"><br><br>
+            Precio Total: $<p name="sum"></p>
+            <input type="submit" name="Arrendar" value="Arrendar" id="button">
+        </form>
+
+    <script type="text/javascript">
+    var precio={{i.precio}}
+    var checkTour = document.getElementById("tour");
+    var checkTrans = document.getElementById("transport");
+    var entr= document.getElementById("entrada").valueAsDate;
+    var sali= document.getElementById("salida").valueAsDate;
+    var days=1000*60*60*24
+    document.getElementById('entrada').min = new Date().toLocaleDateString('en-ca')
+    document.getElementById('salida').min = new Date().toLocaleDateString('en-ca')
+    function calcSum() {
+        let num1 = Number(document.getElementsByName("acomp")[0].value)+ Number(1); 
+         let num2=Number(0)
+         let num3=Number(0)
+         let num4=Number(1)
+        var entr= document.getElementById("entrada").valueAsDate;
+        var sali= document.getElementById("salida").valueAsDate;
+        var tomorrow = new Date(entr)
+        tomorrow.setDate(tomorrow.getDate() + 2)
+        document.getElementById('salida').min = tomorrow.toLocaleDateString('en-ca')
+        if (checkTour.checked == true){
+          num2 = Number(5000) * Number(num1)
+        }else{
+          num2=Number(0)
+        }
+        if(checkTrans.checked == true){
+          num3=Number(10000)
+        }else{num3=Number(0)}
+
+        let suma = ((Number(num1) * Number(precio))*(((sali-entr)/Number(days))) + Number(num2) + Number(num3));
+        if (suma<0){
+          suma="NaN"
+        }
+        
+        document.getElementsByName("sum")[0].innerText  = suma;
+    }
+    window.onload =calcSum;
+    </script>
+    {%endfor%}
+
+
+{% endblock  %}
+
+
+
+<!--       <form method="POST" action="" autocomplete="off">
+          {% csrf_token %}
             N° de Acompañantes: {{form.num_acomp}}<br><br>
             Fecha Entrada: {{form.fecha_entrada}}
             Fecha Salida: {{form.fecha_salida}}<br><br>
             Metodo de Pago: {{form.metodo_pago_id_met_pago}}<br><br>
             Servicios Extra:<br> Tour? {{form.tour}} Transporte? {{form.transport}}<br><br>
-            <input type="submit" name="Arrendar" value="Arrendar" id="button">
-    {%endfor%}
-
-{% endblock  %}
+            <input type="submit" name="Arrendar" value="Arrendar" id="button"> -->

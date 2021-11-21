@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.db import connection
 from datetime import date
+from datetime import datetime
 from django.db.models import Q
 import cx_Oracle
 
@@ -81,39 +82,45 @@ def arriendo(request):
     form = ReservaForm()
     arrendar =request.session.get('arrendar')
     if request.method == 'POST':
-        
+        acomp=int(request.POST.get('acomp'))
+        tour=request.POST.get('tour')
+        transport=request.POST.get('transport')
+        entrada=datetime.strptime(request.POST.get('entrada'), "%Y-%m-%d").date()
+        salida=datetime.strptime(request.POST.get('salida'), "%Y-%m-%d").date()
+        print(entrada)
         form = ReservaForm(request.POST)
-
+        
         if form.is_valid():
-
-            delta=(form.cleaned_data.get('fecha_salida')-form.cleaned_data.get('fecha_entrada'))
-            sub=(Departamento.objects.get(id_depto=arrendar).precio)*(delta.days+1)
+            delta=(salida-entrada)
+            sub=((Departamento.objects.get(id_depto=arrendar).precio)*(delta.days))
             idre=((Reservas.objects.all().count())+1)
             transp=((Transporte.objects.all().count())+1)
             pric=0
             rut=(Cliente.objects.get(correo=request.user).rut)
-            if form.cleaned_data.get('tour'):
+            if tour:
                 tur='Si'
-                pric=+(5000*((form.cleaned_data.get('num_acomp')+1)))
+                pric+=(5000*((acomp)+1))
+                print(acomp,pric)
             else:
                 tur='No'
-            if form.cleaned_data.get('transport'):
+            if transport:
                 tran='Si'
-                pric=+10000
+                pric+=10000
+                print(acomp,pric)
             else:
                 tran='No'
             pricto=pric+sub#pago_reserva| (dias*precioNoche)+tour+transporte
-            
+            print(acomp,pric)
             
             Reservas.objects.create(id_reservas=idre,pago_reserva=pricto,
-            num_acomp=form.cleaned_data.get('num_acomp'),fecha_entrada=form.cleaned_data.get('fecha_entrada'),
-            fecha_salida=form.cleaned_data.get('fecha_salida'),multa=None,subtotal=sub,
+            num_acomp=acomp,fecha_entrada=entrada,
+            fecha_salida=salida,multa=None,subtotal=sub,
             cliente_rut=Cliente.objects.get(rut=rut),departamento_id_depto=Departamento.objects.get(id_depto=arrendar),
             metodo_pago_id_met_pago=form.cleaned_data.get('metodo_pago_id_met_pago'),std_reservas_id_std_resev=StdReservas.objects.get(id_std_resev=3))
             
             Transporte.objects.create(id_transp=transp,direccion='Casa',
              destino=(Departamento.objects.get(id_depto=arrendar).direccion),zonas=(Departamento.objects.get(id_depto=arrendar).zonas_id_zonas),
-             comunas='PROVINCIA DE CAUTÍN',fecha_trans=(form.cleaned_data.get('fecha_entrada')),
+             comunas='PROVINCIA DE CAUTÍN',fecha_trans=entrada,
              std_transporte_id_std_transp=(StdTransporte.objects.get(id_std_transp=1)),trans_condc_id_conduc=TransCondc.objects.get(id_conduc=1))
 
             ServicioExtra.objects.create(id_servextra=((ServicioExtra.objects.all().count())+1),tour=tur,transporte=tran,precio=pric,
