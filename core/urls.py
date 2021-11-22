@@ -10,5 +10,6 @@ urlpatterns = [
     path('register/', views.registerPage, name="register"),
     path('pswd/', views.pswd, name="pswd"),
     path('arriendo/', views.arriendo,name="arriendo"),
+    path('editar/', views.editar,name="editar"),
     path('', include('pwa.urls')),
 ]

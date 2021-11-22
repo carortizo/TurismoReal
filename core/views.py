@@ -87,12 +87,12 @@ def arriendo(request):
         transport=request.POST.get('transport')
         entrada=datetime.strptime(request.POST.get('entrada'), "%Y-%m-%d").date()
         salida=datetime.strptime(request.POST.get('salida'), "%Y-%m-%d").date()
-        print(entrada)
+        
         form = ReservaForm(request.POST)
         
         if form.is_valid():
             delta=(salida-entrada)
-            sub=((Departamento.objects.get(id_depto=arrendar).precio)*(delta.days))
+            sub=((((Departamento.objects.get(id_depto=arrendar).precio)*((acomp)+1)))*(delta.days))
             idre=((Reservas.objects.all().count())+1)
             transp=((Transporte.objects.all().count())+1)
             pric=0
@@ -100,17 +100,17 @@ def arriendo(request):
             if tour:
                 tur='Si'
                 pric+=(5000*((acomp)+1))
-                print(acomp,pric)
+                
             else:
                 tur='No'
             if transport:
                 tran='Si'
                 pric+=10000
-                print(acomp,pric)
+                
             else:
                 tran='No'
             pricto=pric+sub#pago_reserva| (dias*precioNoche)+tour+transporte
-            print(acomp,pric)
+            
             
             Reservas.objects.create(id_reservas=idre,pago_reserva=pricto,
             num_acomp=acomp,fecha_entrada=entrada,
@@ -164,7 +164,6 @@ def home(request):
     elif request.method == 'POST' and 'cancelar'in request.POST:
         cancelar=request.POST.get('cancelar')
         canceler=Reservas.objects.get(id_reservas=cancelar)
-        print(cancelar)
         ServicioExtra.objects.filter(reservas_id_reservas=canceler.id_reservas).delete()
         Transporte.objects.filter(destino=canceler.departamento_id_depto.direccion).delete()
         obj=Departamento.objects.get(id_depto=canceler.departamento_id_depto.id_depto)
@@ -173,4 +172,80 @@ def home(request):
         obj.save()
             
         return redirect('home')
+    elif request.method == 'POST' and 'editar'in request.POST:
+        editar=request.POST.get('editar')
+        request.session['editar']= editar
+        return redirect('editar')
+
     return render(request,'core/pages/home.html',{'deptos':deptos,'reserv':reserv,'reserv2':reserv2})
+
+@login_required(login_url='login')
+def editar(request):
+    form = ReservaForm()
+    editar =request.session.get('editar')
+    idres=((ServicioExtra.objects.get(reservas_id_reservas=editar).reservas_id_reservas).id_reservas)
+    resv = ((Reservas.objects.get(id_reservas=idres).departamento_id_depto).id_depto)
+    serv=ServicioExtra.objects.get(reservas_id_reservas=editar)
+
+
+    if request.method == 'POST':
+        acomp=int(request.POST.get('acomp'))
+        tour=request.POST.get('tour')
+        transport=request.POST.get('transport')
+        entrada=datetime.strptime(request.POST.get('entrada'), "%Y-%m-%d").date()
+        salida=datetime.strptime(request.POST.get('salida'), "%Y-%m-%d").date()
+        
+        form = ReservaForm(request.POST)
+        
+        if form.is_valid():
+            delta=(salida-entrada)
+            sub=((((Departamento.objects.get(id_depto=resv).precio)*((acomp)+1)))*(delta.days))
+            
+            pric=0
+            if tour:
+                tur='Si'
+                pric+=(5000*((acomp)+1))
+                
+            else:
+                tur='No'
+            if transport:
+                tran='Si'
+                pric+=10000
+                
+            else:
+                tran='No'
+            pricto=pric+sub#pago_reserva| (dias*precioNoche)+tour+transporte
+            
+            res=(Reservas.objects.get(id_reservas=idres))
+            res.num_acomp=acomp
+            res.fecha_entrada=entrada
+            res.fecha_salida=salida
+            res.pago_reserva=pricto
+            res.subtotal=sub
+            res.metodo_pago_id_met_pago=form.cleaned_data.get('metodo_pago_id_met_pago')
+            res.save()
+            serv=ServicioExtra.objects.get(reservas_id_reservas=editar)
+            serv.tour=tur
+            serv.transporte=tran
+            serv.precio=pric
+            serv.save()
+            trans=Transporte.objects.get(destino=serv.transporte_id_transp)
+            trans.fecha_trans=entrada
+            trans.save()
+
+            
+            obj=Departamento.objects.get(id_depto=(resv))
+            obj.std_depto_id_stdo_depto=StdDepto.objects.get(id_stdo_depto=3)
+            obj.save()
+            
+            return redirect('home')
+    
+    deptos2= Departamento.objects.all().filter(id_depto= (resv))
+    reserv2=Reservas.objects.all().filter(id_reservas=idres)
+    servi=ServicioExtra.objects.all().filter(id_servextra=editar)
+    inv=Inventario.objects.all()
+    
+    return render(request,'core/pages/editar.html',{'deptos2':deptos2,'inv':inv,'form':form,'reserv2':reserv2,"servi":servi})
+
+
+    

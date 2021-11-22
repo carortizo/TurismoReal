@@ -14,7 +14,8 @@
     <div>
     <a href={%url 'home'%} id="link" style="font-size: 200%;">🡄 Volver</a></div>
     <div class="card-group">
-    {%for i in deptos%}
+    {%for i in deptos2%}
+  
     <div class="card">
       <img src="data:image/jpeg;base64,base64.b64encode({{i.img}}).decode()" class="card-img-top" alt="...">
       <div class="card-body">
@@ -28,19 +29,35 @@
         {%endfor%}
         <p class="card-text">{{i.descripcion}}</p>
         <p class="card-text">${{i.precio}}/Día. - </p>
-        
+        {%for p in reserv2%}
        <form method="POST" action="" autocomplete="off">
           {% csrf_token %}
-            N° de Acompañantes: <input type="number" id="acomp" name="acomp" value="0" min="0" max="5" onchange="calcSum()"><br><br> 
-            Fecha Entrada: <input type="date" id="entrada" name="entrada" required onchange="calcSum()">
-            Fecha Salida: <input type="date" id="salida" name="salida" required onchange="calcSum()"><br><br>
+            N° de Acompañantes: <input type="number" id="acomp" name="acomp" value={{p.num_acomp}} min="0" max="5" onchange="calcSum()"><br><br> 
+            Fecha Entrada: <input type="date" id="entrada" name="entrada"  required onchange="calcSum()">
+            Fecha Salida: <input type="date" id="salida" name="salida"  required onchange="calcSum()"><br><br>
             
-            Servicios Extra:<br> Tour? <input type="checkbox" id="tour" name="tour" onchange="calcSum()"> Transporte? <input type="checkbox" id="transport" name="transport" onchange="calcSum()"><br><br>
+            {%for d in servi%}
+            Servicios Extra:<br> Tour? <input type="checkbox" id="tour" name="tour"  onchange="calcSum()"> Transporte? <input type="checkbox" id="transport" name="transport" onchange="calcSum()"><br><br>
+            <script type="text/javascript">
+            if ("{{d.tour}}"=="Si"){
+              document.getElementById('tour').checked = true
+            }else{document.getElementById('tour').checked = false}
+
+            if ("{{d.transporte}}"=="Si"){
+              document.getElementById('transport').checked = true
+            }else{document.getElementById('transport').checked = false}
+            </script>
+            {%endfor%}
             Precio Total: $<p name="sum"></p>
             Metodo de Pago: {{form.metodo_pago_id_met_pago}}<br><br>
-            <input type="submit" name="Arrendar" value="Arrendar" id="button">
+            <input type="submit" name="Editar" value="Editar" id="button">
         </form>
+        <script type="text/javascript">
+          document.getElementById('entrada').value = new Date("{{p.fecha_entrada}}").toLocaleDateString('en-ca')
+          document.getElementById('salida').value = new Date("{{p.fecha_salida}}").toLocaleDateString('en-ca')
+         </script>
 
+        {%endfor%}
     <script type="text/javascript">
     var precio={{i.precio}}
     var checkTour = document.getElementById("tour");
@@ -78,18 +95,9 @@
     }
     window.onload =calcSum;
     </script>
+    
     {%endfor%}
 
 
 {% endblock  %}
 
-
-
-<!--       <form method="POST" action="" autocomplete="off">
-          {% csrf_token %}
-            N° de Acompañantes: {{form.num_acomp}}<br><br>
-            Fecha Entrada: {{form.fecha_entrada}}
-            Fecha Salida: {{form.fecha_salida}}<br><br>
-            Metodo de Pago: {{form.metodo_pago_id_met_pago}}<br><br>
-            Servicios Extra:<br> Tour? {{form.tour}} Transporte? {{form.transport}}<br><br>
-            <input type="submit" name="Arrendar" value="Arrendar" id="button"> -->

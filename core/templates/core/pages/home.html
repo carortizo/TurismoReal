@@ -22,7 +22,12 @@
         <div class="card-body">
         <h5 class="card-title">{{i.departamento_id_depto.zonas_id_zonas}}</h5>
           <h5 class="card-title">{{i.departamento_id_depto.direccion}}</h5>
+          <p class="card-text">de {{i.fecha_entrada}} a {{i.fecha_salida}}</p>
           <p class="card-text">${{i.pago_reserva}} a pagar.</p>
+          <form method="POST" action="" id="editForm">
+          {% csrf_token %}
+          <button type="submit" name="editar" value="{{i.id_reservas}}" form="editForm" id="button">Editar Reserva</button>
+          </form><br>
           <form method="POST" action="" id="cancelForm">
           {% csrf_token %}
           <button type="submit" name="cancelar" value="{{i.id_reservas}}" form="cancelForm" id="button">Anular Reserva</button>
@@ -30,7 +35,7 @@
         </div>
       </div>
     {%endfor%}
-    </div>
+    </div><br>
     <h1>Departamentos</h1>
 
     <div class="card-group">
@@ -50,6 +55,7 @@
     </div>
     {%endfor%}
     </div>
+    <br>
   
 
 {% endblock  %}
