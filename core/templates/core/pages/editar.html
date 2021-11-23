@@ -17,18 +17,20 @@
     {%for i in deptos2%}
   
     <div class="card">
-      <img src="data:image/jpeg;base64,base64.b64encode({{i.img}}).decode()" class="card-img-top" alt="...">
+      {%if i.img%}
+        <img src="data:img/jpg;base64, {{i.img}}" class="card-img-top" alt="...">
+        {%endif%}
       <div class="card-body">
-      <h5 class="card-title">{{i.zonas_id_zonas}}</h5>
-        <h5 class="card-title">{{i.direccion}}</h5>
-        <p class="card-text">{{i.metros_cua}} Metros Cuadrados.</p>
-        {%for i.inventario_id_inventario in inv|slice:":1"%}
-        <p class="card-text">{{i.inventario_id_inventario.habitacion}} Habitacion(es) | 
-        {{i.inventario_id_inventario.camas}} Cama(s) | {{i.inventario_id_inventario.baños}} Baño(s).</p>
-        <p class="card-text">Incluye: {{i.inventario_id_inventario.incluido}}.</p>
+      <h5 class="card-title">{{i.data.zonas_id_zonas}}</h5>
+        <h5 class="card-title">{{i.data.direccion}}</h5>
+        <p class="card-text">{{i.data.metros_cua}} Metros Cuadrados.</p>
+        {%for i.data.inventario_id_inventario in inv|slice:":1"%}
+        <p class="card-text">{{i.data.inventario_id_inventario.habitacion}} Habitacion(es) | 
+        {{i.data.inventario_id_inventario.camas}} Cama(s) | {{i.data.inventario_id_inventario.baños}} Baño(s).</p>
+        <p class="card-text">Incluye: {{i.data.inventario_id_inventario.incluido}}.</p>
         {%endfor%}
-        <p class="card-text">{{i.descripcion}}</p>
-        <p class="card-text">${{i.precio}}/Día. - </p>
+        <p class="card-text">{{i.data.descripcion}}</p>
+        <p class="card-text">${{i.data.precio}}/Día. - </p>
         {%for p in reserv2%}
        <form method="POST" action="" autocomplete="off">
           {% csrf_token %}
@@ -59,7 +61,7 @@
 
         {%endfor%}
     <script type="text/javascript">
-    var precio={{i.precio}}
+    var precio={{i.data.precio}}
     var checkTour = document.getElementById("tour");
     var checkTrans = document.getElementById("transport");
     var entr= document.getElementById("entrada").valueAsDate;

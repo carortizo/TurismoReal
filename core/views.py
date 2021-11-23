@@ -134,9 +134,17 @@ def arriendo(request):
             return redirect('home')
     
     deptos= Departamento.objects.all().filter(id_depto=arrendar)
+    arreglo=[]
+    for i in deptos:
+        
+        data={
+            'data':i,
+            'img':base64.b64encode(i.img).decode()
+        }
+        arreglo.append(data)
     inv=Inventario.objects.all()
     
-    return render(request,'core/pages/arriendo.html',{'deptos':deptos,'inv':inv,'form':form})
+    return render(request,'core/pages/arriendo.html',{'deptos':arreglo,'inv':inv,'form':form})
 
 @login_required(login_url='login')
 def home(request):
@@ -144,11 +152,30 @@ def home(request):
     
     deptos= Departamento.objects.all().filter(std_depto_id_stdo_depto=1)
     
+    arreglo=[]
+
+    for i in deptos:
+        
+        data={
+            'data':i,
+            'img':base64.b64encode(i.img).decode()
+        }
+        arreglo.append(data)
+    
     reserv=0
     reserv2=[]
     reserv3=[]
+    arreglo2=[]
     if Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(correo=request.user).rut)).count()>0:
         reserv2= (Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(correo=request.user).rut)))
+        
+        for i in reserv2:
+        
+            data={
+            'data':i,
+            'img':base64.b64encode(i.departamento_id_depto.img).decode()
+        }
+        arreglo2.append(data)
         #queries = [Q(pk=value) for value in reserv2]
         #query = queries.pop()
         #for item in queries:
@@ -177,7 +204,7 @@ def home(request):
         request.session['editar']= editar
         return redirect('editar')
 
-    return render(request,'core/pages/home.html',{'deptos':deptos,'reserv':reserv,'reserv2':reserv2})
+    return render(request,'core/pages/home.html',{'deptos':arreglo,'reserv':reserv,'reserv2':arreglo2})
 
 @login_required(login_url='login')
 def editar(request):
@@ -244,8 +271,16 @@ def editar(request):
     reserv2=Reservas.objects.all().filter(id_reservas=idres)
     servi=ServicioExtra.objects.all().filter(id_servextra=editar)
     inv=Inventario.objects.all()
+    arreglo=[]
+    for i in deptos2:
+        
+        data={
+            'data':i,
+            'img':base64.b64encode(i.img).decode()
+        }
+        arreglo.append(data)
     
-    return render(request,'core/pages/editar.html',{'deptos2':deptos2,'inv':inv,'form':form,'reserv2':reserv2,"servi":servi})
+    return render(request,'core/pages/editar.html',{'deptos2':arreglo,'inv':inv,'form':form,'reserv2':reserv2,"servi":servi})
 
 
     

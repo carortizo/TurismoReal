@@ -18,19 +18,21 @@
     <div class="card-group">
     {%for i in reserv2%}
       <div class="card">
-        <img src="data:image/jpeg;base64,base64.b64encode({{i.departamento_id_depto.img}}).decode()" class="card-img-top" alt="...">
+        {%if i.img%}
+        <img src="data:img/jpg;base64, {{i.img}}" class="card-img-top" alt="...">
+        {%endif%}
         <div class="card-body">
-        <h5 class="card-title">{{i.departamento_id_depto.zonas_id_zonas}}</h5>
-          <h5 class="card-title">{{i.departamento_id_depto.direccion}}</h5>
-          <p class="card-text">de {{i.fecha_entrada}} a {{i.fecha_salida}}</p>
-          <p class="card-text">${{i.pago_reserva}} a pagar.</p>
+        <h5 class="card-title">{{i.data.departamento_id_depto.zonas_id_zonas}}</h5>
+          <h5 class="card-title">{{i.data.departamento_id_depto.direccion}}</h5>
+          <p class="card-text">de {{i.data.fecha_entrada}} a {{i.data.fecha_salida}}</p>
+          <p class="card-text">${{i.data.pago_reserva}} a pagar.</p>
           <form method="POST" action="" id="editForm">
           {% csrf_token %}
-          <button type="submit" name="editar" value="{{i.id_reservas}}" form="editForm" id="button">Editar Reserva</button>
+          <button type="submit" name="editar" value="{{i.data.id_reservas}}" form="editForm" id="button">Editar Reserva</button>
           </form><br>
           <form method="POST" action="" id="cancelForm">
           {% csrf_token %}
-          <button type="submit" name="cancelar" value="{{i.id_reservas}}" form="cancelForm" id="button">Anular Reserva</button>
+          <button type="submit" name="cancelar" value="{{i.data.id_reservas}}" form="cancelForm" id="button">Anular Reserva</button>
           </form>
         </div>
       </div>
@@ -42,14 +44,16 @@
 
     {%for i in deptos%}
     <div class="card">
-      <img src="data:image/jpeg;base64,base64.b64encode({{i.img}}).decode()" class="card-img-top" alt="...">
+      {%if i.img%}
+      <img src="data:img/jpg;base64, {{i.img}}" class="card-img-top" alt="...">
+      {%endif%}
       <div class="card-body">
-      <h5 class="card-title">{{i.zonas_id_zonas}}</h5>
-        <h5 class="card-title">{{i.direccion}}</h5>
-        <p class="card-text">${{i.precio}}/Día.</p>
+      <h5 class="card-title">{{i.data.zonas_id_zonas}}</h5>
+        <h5 class="card-title">{{i.data.direccion}}</h5>
+        <p class="card-text">${{i.data.precio}}/Día.</p>
         <form method="POST" action="" id="arriendoForm">
         {% csrf_token %}
-        <button type="submit" name="arrendar" value="{{i.id_depto}}" form="arriendoForm" id="button">Ver</button>
+        <button type="submit" name="arrendar" value="{{i.data.id_depto}}" form="arriendoForm" id="button">Ver</button>
         </form>
       </div>
     </div>
