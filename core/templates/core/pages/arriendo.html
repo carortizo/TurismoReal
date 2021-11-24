@@ -3,22 +3,26 @@
 {% block content %}
 
 <br>
-
+<div class="container">
  <div class="row"> 
       <div class="col-11">
       <h2 id="account">👤 {{request.user.first_name}} </h2></div>
       <div class="col-1">
-      <a href={%url 'logout'%}><img  class=" mx-auto" src="{% static '/img/powerverysmallwhite.png'%}"></img></a></div>
-    </div>
+      <a href={%url 'logout'%}><img  class=" media" src="{% static '/img/powerverysmallwhite.png'%}"></img></a></div>
+    </div></div>
     <div class="text-center "><img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></div>
     <div>
     <a href={%url 'home'%} id="link" style="font-size: 200%;">🡄 Volver</a></div>
-    <div class="card-group">
+    <div class="row">
+    <div class="col-sm-12 col-md-6 ">
     {%for i in deptos%}
-    <div class="card">
-      {%if i.img%}
-        <img src="data:img/jpg;base64, {{i.img}}" class="card-img-top" alt="...">
+          {%if i.img%}
+        <img src="data:img/jpg;base64, {{i.img}}" class="img-fluid" alt="...">
         {%endif%}
+        </div>
+        <div class="col">
+    <div class="card">
+
       <div class="card-body">
       <h5 class="card-title">{{i.data.zonas_id_zonas}}</h5>
         <h5 class="card-title">{{i.data.direccion}}</h5>
@@ -80,6 +84,7 @@
     }
     window.onload =calcSum;
     </script>
+    </div>
     {%endfor%}
 
 

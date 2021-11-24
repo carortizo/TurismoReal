@@ -13,6 +13,9 @@ body{
   margin-left: auto;
   margin-right: auto;
 }
+.img-fluid{
+  max-height: 50%;
+}
 
 #link{
   color:white; 
