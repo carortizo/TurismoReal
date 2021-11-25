@@ -21,6 +21,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 import base64
 
+##Codigo para página de registro de cliente
 @unauthenticated_user
 def registerPage(request):
 
@@ -29,20 +30,26 @@ def registerPage(request):
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            User.objects.create_user(username=form.cleaned_data.get('email'), password=form.cleaned_data.get('password1'), first_name=form.cleaned_data.get('username'),last_name=form.cleaned_data.get('apellidos'))
-            #form.save()
-            Cliente.objects.create(rut=form.cleaned_data.get('rut'),nombre=form.cleaned_data.get('username'),apellidos=form.cleaned_data.get('apellidos'),telefono=form.cleaned_data.get('telefono'),correo=form.cleaned_data.get('email'),contraseña=form.cleaned_data.get('password1'))
-            user= form.cleaned_data.get('email')
-            name=form.cleaned_data.get('username')
-            my_group = Group.objects.get(name='user') 
-            my_group.user_set.add(User.objects.get(username=user).pk)
-            messages.success(request,'Cuenta creada para ' + name)
+            if User.objects.filter(username=form.cleaned_data.get('email')).exists():
+               messages.info(request,'Correo ya se encuentra en uso')
+            elif Cliente.objects.filter(rut=form.cleaned_data.get('rut')).exists():
+                messages.info(request,'Rut ya se encuentra en uso')
+            else:
+                User.objects.create_user(username=form.cleaned_data.get('email'), password=form.cleaned_data.get('password1'), first_name=form.cleaned_data.get('username'),last_name=form.cleaned_data.get('apellidos'))
+                #form.save()
+                Cliente.objects.create(rut=form.cleaned_data.get('rut'),nombre=form.cleaned_data.get('username'),apellidos=form.cleaned_data.get('apellidos'),telefono=form.cleaned_data.get('telefono'),correo=form.cleaned_data.get('email'),contraseña=form.cleaned_data.get('password1'))
+                user= form.cleaned_data.get('email')
+                name=form.cleaned_data.get('username')
+                my_group = Group.objects.get(name='user') 
+                my_group.user_set.add(User.objects.get(username=user).pk)
+                messages.success(request,'Cuenta creada para ' + name)
 
-            return redirect('login')
+                return redirect('login')
 
     context={'form':form}
     return render(request,'core/pages/register.html',context)
 
+##Codigo para página de inicio de sesión
 @unauthenticated_user
 def loginPage(request):
 
@@ -77,6 +84,8 @@ def pswd(request):
 
     return HttpResponse('pswd')
 
+
+##Codigo para página de arriendo/reserva
 @login_required(login_url='login')
 def arriendo(request):
     form = ReservaForm()
@@ -146,6 +155,7 @@ def arriendo(request):
     
     return render(request,'core/pages/arriendo.html',{'deptos':arreglo,'inv':inv,'form':form})
 
+##Codigo para página "casa" 
 @login_required(login_url='login')
 def home(request):
     context={}
@@ -206,6 +216,7 @@ def home(request):
 
     return render(request,'core/pages/home.html',{'deptos':arreglo,'reserv':reserv,'reserv2':arreglo2})
 
+##Codigo para página de edición de reserva
 @login_required(login_url='login')
 def editar(request):
     form = ReservaForm()

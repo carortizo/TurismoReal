@@ -24,7 +24,14 @@
               <!--<input type="button" value="Iniciar Sesión" href="pages/home.html"><a  href="pages/home.html">Home</a><br><br>-->
               <!--<a href={%url 'home'%} class="btn btn-md btn-primary" id="button">Iniciar Sesión</a><br><br>-->
         </form>
-        {{form.errors}}<br>
+        <div>
+        <p id="messages">{{form.errors}}</p><br>
+        </div>
+        {%for message in messages%}
+        <div>
+          <p id="messages">{{message}}</p>
+          </div>
+        {%endfor%}<br>
           <a href={%url 'login'%} id="link">¿Ya tienes una cuenta?</a><br><br>
         </div>
 
