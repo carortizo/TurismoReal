@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'pwa',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,64 @@
+
+{% extends 'core/main.html' %}
+{% load static %}
+{% block content %}
+
+<br>
+    
+<div class="container">
+ <div class="row"> 
+      <div class="col-11">
+      <h2 id="account">👤 Admin {{request.user}} </h2></div>
+      <div class="col-1">
+      <a href={%url 'logout'%}><img  class=" media" src="{% static '/img/powerverysmallwhite.png'%}"></img></a></div>
+    </div>
+  </div>
+
+    <div class="text-center "><img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></img></div>
+  <div class="container text-center ">
+    <a href={%url 'registerfunc'%}><button class="btn" id="button" style="color:white;">Registrar Funcionario</button></a>
+    <!--- <a href={%url 'registerfunc'%}><button class="btn" id="button" style="color:white;">Ver Funcionario</button></a> -->
+    <!--- <a href={%url 'registerfunc'%}><button class="btn" id="button" style="color:white;">Añadir Zona</button></a> -->
+    <h1>Departamentos</h1>
+    
+    <form method="get">
+      {{myFilter.form}}
+      <button class="btn btn-primary" type="submit" id="button">Buscar</button>
+    </form>
+    <br>
+    <div class="row">
+      <div class="col-md">
+      
+        <div class="card card-body">
+          <a href={%url 'newdepto'%}><button class="btn" id="button" style="color:white;width: 100%;">Añadir Departamento</button></a>
+          <table class="table">
+            <tr>
+              <th>Zona</th>
+              <th>Direccion</th>
+              <th>Precio</th>
+              <th>Estado</th>
+              <th></th>
+            </tr>
+              {%for i in deptos%}
+                <tr>
+                    <td>{{i.zonas_id_zonas}}</td>
+                    <td>{{i.direccion}}</td>
+                    <td>{{i.precio}}</td>
+                    <td>{{i.std_depto_id_stdo_depto.descripcion}}</td>
+                    <td><button class="btn" id="button" style="color:white;">Editar</button></td>
+                </tr>
+              {%endfor%}
+              </table>
+            </div>
+          </div>
+        </div>
+  </div>
+</div>
+
+    <br>
+  
+
+{% endblock  %}
+
+
+    

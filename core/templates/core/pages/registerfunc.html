@@ -1,0 +1,65 @@
+
+{% extends 'core/main.html' %}
+{% load static %}
+{% block content %}
+
+<br>
+<div class="container">
+  <div class="row"> 
+       <div class="col-11">
+       <h2 id="account">👤 Admin {{request.user}} </h2></div>
+       <div class="col-1">
+       <a href={%url 'logout'%}><img  class=" media" src="{% static '/img/powerverysmallwhite.png'%}"></img></a></div>
+     </div>
+     <div>&emsp;<a href={%url 'admins'%} id="link" style="font-size: 200%;">🡄 Volver</a></div>
+   </div>
+
+<div class="text-center "><img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></img></div>
+    <div class="container-sm text-center">
+      
+
+        <h3 style="color:white;">Bienvenido al registro de Funcionarios!</h3>
+          <form method="POST" action="" autocomplete="off">
+          {% csrf_token %}
+            {{form.rut}}<br><br>
+            {{form.username}}<br><br>
+            {{form.apellidos}}<br><br>
+            {{form.telefono}}<br><br>
+            {{form.email}}<br><br>
+            {{form.password1}}<br><br>
+            {{form.password2}}<br><br>
+            Zona: {{form2.zonas}}<br><br>
+
+              <input type="submit" name="Registrarse" value="Registrarse" id="button">
+              <!--<input type="text"  placeholder="Correo" id="correo" name="correo" required><br><br>-->
+              <!--<input type="password"  placeholder="Contraseña" id="contraseña" name="contraseña" required><br><br>-->
+              <!--<input type="button" value="Iniciar Sesión" href="pages/home.html"><a  href="pages/home.html">Home</a><br><br>-->
+              <!--<a href={%url 'home'%} class="btn btn-md btn-primary" id="button">Iniciar Sesión</a><br><br>-->
+        </form>
+        <div>
+        <p id="messages">{{form.errors}}</p><br>
+        </div>
+        {%for message in messages%}
+        <div>
+          <p id="messages">{{message}}</p>
+          </div>
+        {%endfor%}<br>
+          
+        </div>
+
+    <script>
+    var form_fields = document.getElementsByTagName('input')
+    form_fields[1].placeholder="Rut..";
+    form_fields[2].placeholder="Nombre..";
+    form_fields[3].placeholder="Apellido(s)..";
+    form_fields[4].placeholder="Teléfono..";
+    form_fields[5].placeholder="Correo..";
+    form_fields[6].placeholder="Contraseña..";
+    form_fields[7].placeholder="Confirmar Contraseña..";
+
+ 
+    </script>
+        
+{% endblock  %}
+
+    

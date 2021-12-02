@@ -1,0 +1,74 @@
+
+{% extends 'core/main.html' %}
+{% load static %}
+{% block content %}
+
+<br>
+    
+    <div class="container">
+ <div class="row"> 
+      <div class="col-11">
+      <h2 id="account">👤 Funcionario {{request.user.first_name}} </h2></div>
+      <div class="col-1">
+      <a href={%url 'logout'%}><img  class=" media" src="{% static '/img/powerverysmallwhite.png'%}"></img></a></div>
+    </div></div>
+
+    <div class="text-center "><img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></img></div>
+    <div class="container text-center ">
+    <h1>Reserva</h1>
+    <div class="card-deck justify-content-center">
+    {%for i in reserv2%}
+    <div class="col-xl-4 col-lg-4 col-md-4">
+      <div class="card " >
+        {%if i.img%}
+        <img src="data:img/jpg;base64, {{i.img}}" class="card-img-top " alt="...">
+        {%endif%}
+        <div class="card-body">
+        <h5 class="card-title">{{i.data.departamento_id_depto.zonas_id_zonas}}</h5>
+          <h5 class="card-title">{{i.data.departamento_id_depto.direccion}}</h5>
+          <p class="card-text">de {{i.data.fecha_entrada}} a {{i.data.fecha_salida}}</p>
+          <p class="card-text">${{i.data.pago_reserva}} a pagar.</p>
+          <form method="POST" action="" id="editForm">
+          {% csrf_token %}
+          <button type="submit" name="editar" value="{{i.data.id_reservas}}" form="editForm" id="button">Editar Reserva</button>
+          </form><br>
+          <form method="POST" action="" id="cancelForm">
+          {% csrf_token %}
+          <button type="submit" name="cancelar" value="{{i.data.id_reservas}}" form="cancelForm" id="button">Anular Reserva</button>
+          </form>
+        </div>
+      </div>
+      </div>
+    {%endfor%}
+    </div><br>
+    <h1>Departamentos</h1>
+
+    <div class="card-deck justify-content-center">
+
+    {%for i in deptos%}
+    <div class="col-xl-4 col-lg-4 col-md-4" >
+    <div class="card">
+      {%if i.img%}
+      <img src="data:img/jpg;base64, {{i.img}}" class="card-img-top" alt="...">
+      {%endif%}
+      <div class="card-body">
+      <h5 class="card-title">{{i.data.zonas_id_zonas}}</h5>
+        <h5 class="card-title">{{i.data.direccion}}</h5>
+        <p class="card-text">${{i.data.precio}}/Día.</p>
+        <form method="POST" action="" id="arriendoForm">
+        {% csrf_token %}
+        <button type="submit" name="arrendar" value="{{i.data.id_depto}}" form="arriendoForm" id="button">Ver</button>
+        </form>
+      </div>
+    </div>
+    </div>
+    {%endfor%}
+    </div>
+    </div>
+    <br>
+  
+
+{% endblock  %}
+
+
+    

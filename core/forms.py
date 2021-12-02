@@ -28,7 +28,11 @@ class ReservaForm(forms.ModelForm):
         fields = ("metodo_pago_id_met_pago",)
         
 
+class ZonaForm(forms.Form):
+    zonas = forms.ModelChoiceField(queryset=Zonas.objects.all())
 
+class EstadoForm(forms.Form):
+    estado = forms.ModelChoiceField(queryset=StdDepto.objects.all())
 
 
 

@@ -1,0 +1,47 @@
+
+{% extends 'core/main.html' %}
+{% load static %}
+{% block content %}
+
+<br>
+    
+<div class="container">
+  <div class="row"> 
+       <div class="col-11">
+       <h2 id="account">👤 Admin {{request.user}} </h2></div>
+       <div class="col-1">
+       <a href={%url 'logout'%}><img  class=" media" src="{% static '/img/powerverysmallwhite.png'%}"></img></a></div>
+     </div>
+     <div>&emsp;<a href={%url 'admins'%} id="link" style="font-size: 200%;">🡄 Volver</a></div>
+   </div>
+
+    <div class="text-center "><img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></img></div>
+  <div class="container text-center ">
+    
+    <br>
+    <h1>Nuevo Departamento</h1>
+    <div class="card card-body">
+      <form method="POST" action="" autocomplete="off" enctype="multipart/form-data">
+        {% csrf_token %}
+        Metros Cuadrados: <input type="number" id="metros_cua" name="metros_cua"  min="1" max="500"><br>
+        Dirección: <input type="text" id="direccion" name="direccion"><br>
+        Descripción: <input type="text" id="descripcion" name="descripcion"><br>
+        Precio: <input type="number" id="precio" name="precio"  min="1" max="9999999"><br>
+        Imagen: <input type="file" id="imagen" name="imagen" accept="image/*"><br>
+        Zona:{{form2.zonas}}<br>
+        Incluido en Inventario: <input type="text" id="incluido" name="incluido"><br>
+        Habitacion(es):<input type="number" id="habitacion" name="habitacion"  min="1" max="5"><br>
+        Cama(s): <input type="number" id="cama" name="cama"  min="1" max="5"><br>
+        Baño(s): <input type="number" id="bano" name="bano"  min="1" max="5"><br>
+        Estado:{{form.estado}}<br>
+      <input type="submit" name="Registrar" value="Registrar" id="button">
+  </div>
+</div>
+
+    <br>
+  
+
+{% endblock  %}
+
+
+    

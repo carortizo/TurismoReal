@@ -5,6 +5,7 @@ from django.db import connection
 from datetime import date
 from datetime import datetime
 from django.db.models import Q
+from .filters import DepartamentoFilter
 import cx_Oracle
 
 from django.contrib.auth import authenticate, login, logout
@@ -15,11 +16,91 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from .models import *
-from .forms import CreateUserForm, ReservaForm
-from .decorators import unauthenticated_user, allowed_users
+from .forms import CreateUserForm, EstadoForm, ReservaForm, ZonaForm
+from .decorators import func_only, unauthenticated_user, allowed_users, admin_only, user_only
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 import base64
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['func'])
+def funcHome(request):
+    return render(request,'core/pages/func.html')
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
+def newdepto(request):
+    form2= ZonaForm()
+    form= EstadoForm()
+    registrar =request.session.get('Registrar')
+    if request.method == 'POST':
+        form2= ZonaForm(request.POST)
+        form= EstadoForm(request.POST)
+        if form.is_valid() and form2.is_valid():
+            me=request.POST.get('metros_cua')
+            dir=request.POST.get('direccion')
+            pre=request.POST.get('precio')
+            zon=form2.cleaned_data.get("zonas")
+            std=form.cleaned_data.get("estado")
+            idnv=((Inventario.objects.all().count())+1)
+            hab=request.POST.get('habitacion')
+            cam=request.POST.get('cama')
+            ban=request.POST.get('bano')
+            inc=request.POST.get('incluido')
+            imagen=request.FILES["imagen"].read()
+            Inventario.objects.create(id_inventario=idnv,habitacion=hab,camas=cam,incluido=inc,baños=ban)
+            inv=Inventario.objects.get(id_inventario=idnv)
+            idep=((Departamento.objects.all().count())+1)
+            Departamento.objects.create(id_depto=idep,metros_cua=me,direccion=dir,precio=pre,img=imagen,zonas_id_zonas=zon,inventario_id_inventario=inv,std_depto_id_stdo_depto=std)
+            return redirect('admins')
+    context={"form":form,"form2":form2}
+    return render(request,'core/pages/newdepto.html',context)
+
+
+#Página home de admins
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
+def adminHome(request):
+    deptos= Departamento.objects.all()
+    myFilter = DepartamentoFilter(request.GET, queryset=deptos)
+    deptos=myFilter.qs
+    context={"deptos":deptos,"myFilter":myFilter}
+    return render(request,'core/pages/admins.html',context)
+
+
+
+#Página para registrar funcionarios. Solo deberia poder acceder un admin(?)
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
+def registerFunc(request):
+    form = CreateUserForm()
+    form2= ZonaForm()
+
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        form2= ZonaForm(request.POST)
+        if form.is_valid() and form2.is_valid():
+            if User.objects.filter(username=form.cleaned_data.get('email')).exists():
+               messages.info(request,'Correo ya se encuentra en uso')
+            elif Cliente.objects.filter(rut=form.cleaned_data.get('rut')).exists():
+                messages.info(request,'Rut ya se encuentra en uso')
+            else:
+                User.objects.create_user(username=form.cleaned_data.get('email'), password=form.cleaned_data.get('password1'), first_name=form.cleaned_data.get('username'),last_name=form.cleaned_data.get('apellidos'))
+                #form.save()
+                id_per=((Personal.objects.all().count())+1)
+                idz=form2.cleaned_data.get("zonas")
+                Personal.objects.create(id_personal=id_per, nombre=form.cleaned_data.get('username'),apellidos=form.cleaned_data.get('apellidos'),rut=form.cleaned_data.get('rut'),telefono=form.cleaned_data.get('telefono'),correo=form.cleaned_data.get('email'),contraseña=form.cleaned_data.get('password1'),tipo_personal_id_tipo_prs=(TipoPersonal.objects.get(id_tipo_prs=1)),zonas_id_zonas=idz)
+                user= form.cleaned_data.get('email')
+                name=form.cleaned_data.get('username')
+                my_group = Group.objects.get(name='func') 
+                my_group.user_set.add(User.objects.get(username=user).pk)
+                messages.success(request,'Cuenta creada para ' + name)
+
+                return redirect('admins')
+
+    context={'form':form,'form2':form2}
+    return render(request,'core/pages/registerfunc.html',context)
 
 ##Codigo para página de registro de cliente
 @unauthenticated_user
@@ -67,26 +148,15 @@ def loginPage(request):
     context={}
     return render(request,'core/pages/login.html',context)
 
+##Codigo para cerrar sesión
 def logoutUser(request):
     logout(request)
     return redirect('login')
 
-@login_required(login_url='login')
-def user(request):
-    return HttpResponse('user')
-
-@login_required(login_url='login')
-def departamento(request):
-    return HttpResponse('departamento')
-
-@unauthenticated_user
-def pswd(request):
-
-    return HttpResponse('pswd')
-
 
 ##Codigo para página de arriendo/reserva
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['user'])
 def arriendo(request):
     form = ReservaForm()
     arrendar =request.session.get('arrendar')
@@ -157,6 +227,8 @@ def arriendo(request):
 
 ##Codigo para página "casa" 
 @login_required(login_url='login')
+@user_only
+@allowed_users(allowed_roles=['user'])
 def home(request):
     context={}
     
@@ -218,6 +290,7 @@ def home(request):
 
 ##Codigo para página de edición de reserva
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['user'])
 def editar(request):
     form = ReservaForm()
     editar =request.session.get('editar')
@@ -294,4 +367,22 @@ def editar(request):
     return render(request,'core/pages/editar.html',{'deptos2':arreglo,'inv':inv,'form':form,'reserv2':reserv2,"servi":servi})
 
 
-    
+
+
+#-----------Creo que los que siguen no fueron usados XD-------------------------------------------------
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['user'])
+def user(request):
+    return HttpResponse('user')
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['user'])
+def departamento(request):
+    return HttpResponse('departamento')
+
+@unauthenticated_user
+def pswd(request):
+
+    return HttpResponse('pswd')
+
+   
