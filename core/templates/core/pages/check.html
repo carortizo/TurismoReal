@@ -1,0 +1,41 @@
+
+{% extends 'core/main.html' %}
+{% load static %}
+{% block content %}
+
+<br>
+    
+<div class="container">
+  <div class="row"> 
+    <div class="col-11">
+      <h2 id="account">👤 Funcionario {{request.user.first_name}} </h2>
+    </div>
+    <div class="col-1">
+      <a href={%url 'logout'%}><img  class=" media" src="{% static '/img/powerverysmallwhite.png'%}"></img></a>
+    </div>
+  </div>
+  <div>&emsp;<a href={%url 'checkin'%} id="link" style="font-size: 200%;">🡄 Volver</a></div>
+</div>
+  <div class="text-center ">
+    <img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></img>
+  </div>
+  <div class="container text-center ">
+    <div class="card">
+      <div class="card-body">
+        Cliente: {{reserva.cliente_rut.nombre}} {{reserva.cliente_rut.apellidos}}<br>
+        Telefono: {{reserva.cliente_rut.telefono}}<br>
+        RUT:{{reserva.cliente_rut.rut}}
+        <form method="POST" action="" autocomplete="off" id="Checkear">
+          {% csrf_token %}
+          Estado depto. al entregar: <input type="text" id="deptostd" name="deptostd" required><br><br>
+          <input type="submit" name="Checkear" value="Checkear" id="button">
+        </form>
+      </div>
+    </div>
+  </div>
+  
+
+{% endblock  %}
+
+
+    

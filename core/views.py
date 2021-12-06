@@ -6,6 +6,7 @@ from datetime import date
 from datetime import datetime
 from django.db.models import Q
 from .filters import DepartamentoFilter
+from django.db.models import Max
 import cx_Oracle
 
 from django.contrib.auth import authenticate, login, logout
@@ -22,12 +23,203 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 import base64
 
+##Mover ciertas cosas a models.py si sobra tiempo
+
+
+#check-out reserva seleccionada
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['func'])
+def checker(request):
+        ##check es id_reservas
+    check =request.session.get('check')
+    reserva=Reservas.objects.get(id_reservas=check)
+    idcre=CheckOut.objects.all()
+    if idcre.count()>0:
+        idcre.aggregate(Max('id_check_out'))
+        idcre=idcre.order_by('-id_check_out')[0]
+        idc=(int(idcre.id_check_out)+1)
+    else:
+        idc=1
+    idrer=RegistroArri.objects.all()
+    if idrer.count()>0:
+        idrer.aggregate(Max('id_registro_arri'))
+        idrer=idrer.order_by('-id_registro_arri')[0]
+        idr=(int(idrer)+1)
+    else:
+        idr=1
+    idp=Personal.objects.get(correo=request.user.username)
+    if request.method == 'POST':
+        estado=request.POST.get('deptostd')
+        multa=request.POST.get('multa')
+        total=(int(multa)+int((reserva.subtotal)))
+        reserva.multa=multa
+        reserva.save()
+        
+        checkers=CheckIn.objects.get(registro_pago_id_reg_pago=(RegistroPago.objects.get(reservas_id_reservas=reserva)))
+        RegistroArri.objects.create(id_registro_arri=idr,descripcion=estado,pago_total=total,check_in_id_check_in=checkers)
+        rp=RegistroArri.objects.get(id_registro_arri=idr)
+        CheckOut.objects.create(id_check_out=idc,descripcion=estado,multa=multa,registro_arri_id_registro_arri=rp,personal_id_personal=idp)
+        dep=Departamento.objects.get(id_depto=reserva.departamento_id_depto)
+        dep.std_depto_id_stdo_depto=StdDepto.objects.get(id_stdo_depto=1)
+        return redirect('checkout')
+    
+    context={"reserva":reserva}
+    return render(request,'core/pages/checker.html',context)
+
+#Check-out
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['func'])
+def checkout(request):
+    regi=RegistroArri.objects.all()
+    arregloregi=[]
+    for i in regi:
+       arregloregi.append(i.check_in_id_check_in.registro_pago_id_reg_pago.reservas_id_reservas.id_reservas)
+
+    deptos= Reservas.objects.filter().exclude(id_reservas__in=arregloregi)
+    cliente=Cliente.objects.all()
+    
+    arreglo=[]
+
+    for i in deptos:
+        
+        data={
+            'data':i,
+            'img':base64.b64encode(i.departamento_id_depto.img).decode()
+        }
+
+        arreglo.append(data)
+    if request.method == 'POST':
+        check=request.POST.get('check')
+        request.session['check']= check
+        return redirect('checker')
+    
+    context={"resev2":arreglo,"cli":cliente}
+    return render(request,'core/pages/checkout.html',context)
+
+
+#check-in reserva seleccionada
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['func'])
+def check(request):
+    ##check es id_reservas
+    check =request.session.get('check')
+    reserva=Reservas.objects.get(id_reservas=check)
+    idcre=CheckIn.objects.all()
+    if idcre.count()>0:
+        idcre.aggregate(Max('id_check_in'))
+        idcre=idcre.order_by('-id_check_in')[0]
+        idc=(int(idcre.id_check_in)+1)
+    else:
+        idc=1    
+    idre=RegistroPago.objects.all()
+    if idre.count()>0:
+        idre.aggregate(Max('id_reg_pago'))
+        idre=idre.order_by('-id_reg_pago')[0]
+        idr=(int(idre.id_reg_pago)+1)
+    else:
+        idr=1
+    idp=Personal.objects.get(correo=request.user.username)
+    if request.method == 'POST':
+        estado=request.POST.get('deptostd')
+        RegistroPago.objects.create(id_reg_pago=idr,descripcion=estado,pago_total=reserva.subtotal,reservas_id_reservas=reserva,metodo_pago_id_met_pago=reserva.metodo_pago_id_met_pago)
+        rp=RegistroPago.objects.get(id_reg_pago=idr)
+        CheckIn.objects.create(id_check_in=idc,descripcion=estado,registro_pago_id_reg_pago=rp,personal_id_personal=idp)
+        return redirect('checkin')
+    
+    context={"reserva":reserva}
+    return render(request,'core/pages/check.html',context)
+
+
+#Check-in
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['func'])
+def checkin(request):
+    regi=RegistroPago.objects.all()
+    arregloregi=[]
+    for i in regi:
+       arregloregi.append(i.reservas_id_reservas.id_reservas)
+
+
+
+
+    deptos= Reservas.objects.filter().exclude(id_reservas__in=arregloregi)
+    cliente=Cliente.objects.all()
+    
+    arreglo=[]
+
+    for i in deptos:
+        
+        data={
+            'data':i,
+            'img':base64.b64encode(i.departamento_id_depto.img).decode()
+        }
+
+        arreglo.append(data)
+    if request.method == 'POST':
+        check=request.POST.get('check')
+        request.session['check']= check
+        return redirect('check')
+    
+    context={"resev2":arreglo,"cli":cliente}
+    return render(request,'core/pages/checkin.html',context)
+
+#Página "Home" de funcionarios
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['func'])
 def funcHome(request):
     return render(request,'core/pages/func.html')
 
+#Edición de departamentos
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
+def edepto(request):
+    #edepto es el id del departamento que decidiste editar
+    edepto =request.session.get('edepto')
+    form2= ZonaForm()
+    form= EstadoForm()
+    idepto = (Departamento.objects.all().filter(id_depto=edepto))
+    arreglo=[]
+    for i in idepto:
+        
+        data={
+            'data':i,
+            'img':base64.b64encode(i.img).decode()
+        }
+        arreglo.append(data)
 
+    if request.method == 'POST':
+        form2= ZonaForm(request.POST)
+        form= EstadoForm(request.POST)
+        if form.is_valid() and form2.is_valid():
+            change=request.POST.get('change')
+            if change=="True":
+                imagen=request.FILES["imagen"].read()
+                dep=Departamento.objects.get(id_depto=edepto)
+                dep.img=imagen
+                dep.save()
+            dep2=Departamento.objects.get(id_depto=edepto)
+            inv=Inventario.objects.get(id_inventario=dep2.inventario_id_inventario.id_inventario)
+            dep2.zonas_id_zonas=form2.cleaned_data.get("zonas")
+            dep2.direccion=request.POST.get('direccion')
+            dep2.std_depto_id_stdo_depto=form.cleaned_data.get("estado")
+            dep2.descripcion=request.POST.get('descripcion')
+            dep2.metros_cua=request.POST.get('metros_cua')
+            dep2.precio=request.POST.get('precio')
+            dep2.save()
+            
+            inv.habitacion=request.POST.get('habitacion')
+            inv.camas=request.POST.get('cama')
+            inv.incluido=request.POST.get('incluido')
+            inv.baños=request.POST.get('bano')
+            inv.save()
+            
+
+            return redirect('admins')
+    
+    context={"idepto":arreglo,"form":form,"form2":form2}
+    return render(request,'core/pages/edepto.html',context)
+
+#Creacion de nuevos departamentos
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['admin'])
 def newdepto(request):
@@ -37,22 +229,39 @@ def newdepto(request):
     if request.method == 'POST':
         form2= ZonaForm(request.POST)
         form= EstadoForm(request.POST)
+        imagen=request.FILES["imagen"].read()
         if form.is_valid() and form2.is_valid():
             me=request.POST.get('metros_cua')
             dir=request.POST.get('direccion')
             pre=request.POST.get('precio')
             zon=form2.cleaned_data.get("zonas")
             std=form.cleaned_data.get("estado")
-            idnv=((Inventario.objects.all().count())+1)
+            idnvre=Inventario.objects.all()
+            if idnvre.count()>0:
+                idnvre.aggregate(Max('id_inventario'))
+                idnvre=idnvre.order_by('-id_inventario')[0]
+                idnv=(int(idnvre.id_inventario)+1)
+            else:
+                idnv=1
             hab=request.POST.get('habitacion')
             cam=request.POST.get('cama')
             ban=request.POST.get('bano')
             inc=request.POST.get('incluido')
-            imagen=request.FILES["imagen"].read()
+            desc=request.POST.get('descripcion')
+            
             Inventario.objects.create(id_inventario=idnv,habitacion=hab,camas=cam,incluido=inc,baños=ban)
             inv=Inventario.objects.get(id_inventario=idnv)
-            idep=((Departamento.objects.all().count())+1)
-            Departamento.objects.create(id_depto=idep,metros_cua=me,direccion=dir,precio=pre,img=imagen,zonas_id_zonas=zon,inventario_id_inventario=inv,std_depto_id_stdo_depto=std)
+            idepre=Departamento.objects.all()
+            if idepre.count()>0:
+                idepre.aggregate(Max('id_depto'))
+                idepre=idepre.order_by('-id_depto')[0]
+                idep=(int(idepre.id_depto)+1)
+            else:
+                idep=1
+            Departamento.objects.create(id_depto=idep,metros_cua=me,direccion=dir,descripcion=desc,precio=pre,img=None,zonas_id_zonas=zon,inventario_id_inventario=inv,std_depto_id_stdo_depto=std)
+            dep=Departamento.objects.get(id_depto=idep)
+            dep.img=imagen
+            dep.save()
             return redirect('admins')
     context={"form":form,"form2":form2}
     return render(request,'core/pages/newdepto.html',context)
@@ -66,6 +275,10 @@ def adminHome(request):
     myFilter = DepartamentoFilter(request.GET, queryset=deptos)
     deptos=myFilter.qs
     context={"deptos":deptos,"myFilter":myFilter}
+    if request.method == 'POST':
+        edepto=request.POST.get('edepto')
+        request.session['edepto']= edepto
+        return redirect('edepto')
     return render(request,'core/pages/admins.html',context)
 
 
@@ -88,7 +301,13 @@ def registerFunc(request):
             else:
                 User.objects.create_user(username=form.cleaned_data.get('email'), password=form.cleaned_data.get('password1'), first_name=form.cleaned_data.get('username'),last_name=form.cleaned_data.get('apellidos'))
                 #form.save()
-                id_per=((Personal.objects.all().count())+1)
+                id_perer=Personal.objects.all()
+                if id_perer.count()>0:
+                    id_perer.aggregate(Max('id_personal'))
+                    id_perer=id_perer.order_by('-id_personal')[0]
+                    id_per=(int(id_perer.id_personal)+1)
+                else:
+                    id_per=1
                 idz=form2.cleaned_data.get("zonas")
                 Personal.objects.create(id_personal=id_per, nombre=form.cleaned_data.get('username'),apellidos=form.cleaned_data.get('apellidos'),rut=form.cleaned_data.get('rut'),telefono=form.cleaned_data.get('telefono'),correo=form.cleaned_data.get('email'),contraseña=form.cleaned_data.get('password1'),tipo_personal_id_tipo_prs=(TipoPersonal.objects.get(id_tipo_prs=1)),zonas_id_zonas=idz)
                 user= form.cleaned_data.get('email')
@@ -172,8 +391,21 @@ def arriendo(request):
         if form.is_valid():
             delta=(salida-entrada)
             sub=((((Departamento.objects.get(id_depto=arrendar).precio)*((acomp)+1)))*(delta.days))
-            idre=((Reservas.objects.all().count())+1)
-            transp=((Transporte.objects.all().count())+1)
+            idrere=Reservas.objects.all()
+            if idrere.count()>0:
+                idrere.aggregate(Max('id_reservas'))
+                idrere=idrere.order_by('-id_reservas')[0]
+                idre=(int(idrere.id_reservas)+1)
+            else:
+                idre=1
+
+            transpid=Transporte.objects.all()
+            if transpid.count()>0:
+                transpid.aggregate(Max('id_transp'))
+                transpid=transpid.order_by('-id_transp')[0]
+                transp=(int(transpid.id_transp)+1)
+            else:
+                transp=1
             pric=0
             rut=(Cliente.objects.get(correo=request.user).rut)
             if tour:
@@ -197,12 +429,24 @@ def arriendo(request):
             cliente_rut=Cliente.objects.get(rut=rut),departamento_id_depto=Departamento.objects.get(id_depto=arrendar),
             metodo_pago_id_met_pago=form.cleaned_data.get('metodo_pago_id_met_pago'),std_reservas_id_std_resev=StdReservas.objects.get(id_std_resev=3))
             
+            ##La creación de un transportista esta fuera del objetivo de este trabajo/ "Provincia de cautín" esta intencionalmente Hard Coded
+            
             Transporte.objects.create(id_transp=transp,direccion='Casa',
              destino=(Departamento.objects.get(id_depto=arrendar).direccion),zonas=(Departamento.objects.get(id_depto=arrendar).zonas_id_zonas),
              comunas='PROVINCIA DE CAUTÍN',fecha_trans=entrada,
              std_transporte_id_std_transp=(StdTransporte.objects.get(id_std_transp=1)),trans_condc_id_conduc=TransCondc.objects.get(id_conduc=1))
+            
+            idevalserv=ServicioExtra.objects.all()
+            if idevalserv.count()>0:
+                idevalserv.aggregate(Max('id_servextra'))
+                idevalserv=idevalserv.order_by('-id_servextra')[0]
+                ideva=(int(idevalserv.id_servextra)+1)
+            else:
+                ideva=1
+            
 
-            ServicioExtra.objects.create(id_servextra=((ServicioExtra.objects.all().count())+1),tour=tur,transporte=tran,precio=pric,
+
+            ServicioExtra.objects.create(id_servextra=ideva,tour=tur,transporte=tran,precio=pric,
              tour_id_tour=Tour.objects.get(id_tour=1),transporte_id_transp=Transporte.objects.get(id_transp=transp),
              reservas_id_reservas=Reservas.objects.get(id_reservas=idre))
 
@@ -248,8 +492,16 @@ def home(request):
     reserv2=[]
     reserv3=[]
     arreglo2=[]
-    if Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(correo=request.user).rut)).count()>0:
-        reserv2= (Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(correo=request.user).rut)))
+    regi=RegistroArri.objects.all()
+    arregloregi=[]
+    for i in regi:
+       arregloregi.append(i.check_in_id_check_in.registro_pago_id_reg_pago.reservas_id_reservas.id_reservas)
+
+    deptos= Reservas.objects.filter(id_reservas__in=arregloregi)
+
+    if Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(correo=request.user).rut)).exclude(id_reservas__in=arregloregi).count()>0:
+        
+        reserv2= (Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(correo=request.user).rut)).exclude(id_reservas__in=arregloregi))
         
         for i in reserv2:
         
@@ -258,12 +510,14 @@ def home(request):
             'img':base64.b64encode(i.departamento_id_depto.img).decode()
         }
         arreglo2.append(data)
-        #queries = [Q(pk=value) for value in reserv2]
-        #query = queries.pop()
-        #for item in queries:
-        #    query|=item.departamento_id_depto
-        #for i in reserv2:
-         #   reserv3 |=i.departamento_id_depto
+
+        regis=RegistroPago.objects.all()
+        arregloregis=[]
+        for i in regis:
+            arregloregis.append(i.reservas_id_reservas.id_reservas)
+        reserv3= (Reservas.objects.all().filter(cliente_rut=(Cliente.objects.get(correo=request.user).rut)).exclude(id_reservas__in=arregloregis))
+        
+
         reserv=Departamento.objects.all()
     
     if request.method == 'POST' and 'arrendar'in request.POST:
@@ -273,11 +527,10 @@ def home(request):
     elif request.method == 'POST' and 'cancelar'in request.POST:
         cancelar=request.POST.get('cancelar')
         canceler=Reservas.objects.get(id_reservas=cancelar)
-        ServicioExtra.objects.filter(reservas_id_reservas=canceler.id_reservas).delete()
-        Transporte.objects.filter(destino=canceler.departamento_id_depto.direccion).delete()
+        ServicioExtra.objects.filter(reservas_id_reservas=canceler).delete()
         obj=Departamento.objects.get(id_depto=canceler.departamento_id_depto.id_depto)
         obj.std_depto_id_stdo_depto=StdDepto.objects.get(id_stdo_depto=1)
-        Reservas.objects.filter(id_reservas=canceler.id_reservas).delete()
+        Reservas.objects.filter(id_reservas=cancelar).delete()
         obj.save()
             
         return redirect('home')
@@ -286,7 +539,7 @@ def home(request):
         request.session['editar']= editar
         return redirect('editar')
 
-    return render(request,'core/pages/home.html',{'deptos':arreglo,'reserv':reserv,'reserv2':arreglo2})
+    return render(request,'core/pages/home.html',{'deptos':arreglo,'reserv':reserv,'reserv2':arreglo2,'reserv3':reserv3})
 
 ##Codigo para página de edición de reserva
 @login_required(login_url='login')
@@ -340,7 +593,7 @@ def editar(request):
             serv.transporte=tran
             serv.precio=pric
             serv.save()
-            trans=Transporte.objects.get(destino=serv.transporte_id_transp)
+            trans=Transporte.objects.filter(destino=serv.transporte_id_transp)[0]
             trans.fecha_trans=entrada
             trans.save()
 

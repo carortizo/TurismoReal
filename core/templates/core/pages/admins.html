@@ -37,7 +37,7 @@
               <th>Direccion</th>
               <th>Precio</th>
               <th>Estado</th>
-              <th></th>
+              <th> </th>
             </tr>
               {%for i in deptos%}
                 <tr>
@@ -45,7 +45,10 @@
                     <td>{{i.direccion}}</td>
                     <td>{{i.precio}}</td>
                     <td>{{i.std_depto_id_stdo_depto.descripcion}}</td>
-                    <td><button class="btn" id="button" style="color:white;">Editar</button></td>
+                    <td><form method="POST" action="" id="edepto">
+                      {% csrf_token %}
+                      <button type="submit" name="edepto" value="{{i.id_depto}}" form="edepto" id="button" style="color:white;">Editar</button>
+                      </form></td>
                 </tr>
               {%endfor%}
               </table>

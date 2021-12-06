@@ -1,0 +1,55 @@
+
+{% extends 'core/main.html' %}
+{% load static %}
+{% block content %}
+
+<br>
+    
+<div class="container">
+  <div class="row"> 
+    <div class="col-11">
+      <h2 id="account">👤 Funcionario {{request.user.first_name}} </h2>
+    </div>
+    <div class="col-1">
+      <a href={%url 'logout'%}><img  class=" media" src="{% static '/img/powerverysmallwhite.png'%}"></img></a>
+    </div>
+  </div>
+  <div>&emsp;<a href={%url 'admins'%} id="link" style="font-size: 200%;">🡄 Volver</a></div>
+</div>
+  <div class="text-center ">
+    <img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></img>
+  </div>
+  <div class="container text-center ">
+    <h1>Check-out Reservas</h1>
+    <div class="card-deck justify-content-center">
+    {%for i in resev2%}
+    <div class="col-xl-4 col-lg-4 col-md-4">
+      <div class="card " >
+        {%if i.img%}
+        <img src="data:img/jpg;base64, {{i.img}}" class="card-img-top " alt="...">
+        {%endif%}
+        <div class="card-body">
+        <h5 class="card-title">{{i.data.departamento_id_depto.zonas_id_zonas}}</h5>
+          <h5 class="card-title">{{i.data.departamento_id_depto.direccion}}</h5>
+          <p class="card-text">de {{i.data.fecha_entrada}} a {{i.data.fecha_salida}}</p>
+          <p class="card-text">${{i.data.pago_reserva}} a pagar.</p>
+          Arrendado por {{i.data.cliente_rut.nombre}} {{i.data.cliente_rut.apellidos}}<br>
+          Telefono: {{i.data.cliente_rut.telefono}}<br>
+          RUT:{{i.data.cliente_rut.rut}}
+          <form method="POST" action="" id="check">
+          {% csrf_token %}
+          <br>
+          <button type="submit" name="check" value="{{i.data.id_reservas}}" form="check" id="button">Checkear</button>
+          </form>
+        </div>
+      </div>
+      </div>
+    {%endfor%}
+    </div><br>
+  </div>
+  
+
+{% endblock  %}
+
+
+    

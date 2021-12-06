@@ -16,25 +16,25 @@
    </div>
 
     <div class="text-center "><img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></img></div>
-  <div class="container text-center ">
+  <div class="container text-left ">
     
     <br>
     <h1>Nuevo Departamento</h1>
     <div class="card card-body">
       <form method="POST" action="" autocomplete="off" enctype="multipart/form-data">
         {% csrf_token %}
-        Metros Cuadrados: <input type="number" id="metros_cua" name="metros_cua"  min="1" max="500"><br>
-        Dirección: <input type="text" id="direccion" name="direccion"><br>
-        Descripción: <input type="text" id="descripcion" name="descripcion"><br>
-        Precio: <input type="number" id="precio" name="precio"  min="1" max="9999999"><br>
-        Imagen: <input type="file" id="imagen" name="imagen" accept="image/*"><br>
-        Zona:{{form2.zonas}}<br>
-        Incluido en Inventario: <input type="text" id="incluido" name="incluido"><br>
-        Habitacion(es):<input type="number" id="habitacion" name="habitacion"  min="1" max="5"><br>
-        Cama(s): <input type="number" id="cama" name="cama"  min="1" max="5"><br>
-        Baño(s): <input type="number" id="bano" name="bano"  min="1" max="5"><br>
-        Estado:{{form.estado}}<br>
+        Zona: {{form2.zonas}}<br>
+        Dirección: <input type="text" id="direccion" name="direccion" required><br>
+        Estado: {{form.estado}}<br>
+        Descripción: <input type="text" id="descripcion" name="descripcion" required><br>
+        Metros Cuadrados: <input type="number" id="metros_cua" name="metros_cua"  min="1" max="500" required><br>
+        <p class="card-text"> Habitacion(es): <input type="number" id="habitacion" name="habitacion"   min="0" max="5" required> | 
+          Cama(s): <input type="number" id="cama" name="cama"  min="0" max="5" required> | Baño(s): <input type="number" id="bano" name="bano" min="0" max="5" required></p>
+        Incluido en Inventario: <input type="text" id="incluido" name="incluido" required><br>
+        Precio: <input type="number" id="precio" name="precio"  min="1" min="1" max="9999999" required><br>
+        Imagen: <input type="file" id="imagen" name="imagen" accept="image/*" required><br>
       <input type="submit" name="Registrar" value="Registrar" id="button">
+      </form>
   </div>
 </div>
 

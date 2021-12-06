@@ -1,0 +1,59 @@
+{% extends 'core/main.html' %}
+{% load static %}
+{% block content %}
+
+<br>
+
+<div class="container">
+  <div class="row"> 
+       <div class="col-11">
+       <h2 id="account">👤 Admin {{request.user}} </h2></div>
+       <div class="col-1">
+       <a href={%url 'logout'%}><img  class=" media" src="{% static '/img/powerverysmallwhite.png'%}"></img></a></div>
+     </div>
+     <div>&emsp;<a href={%url 'admins'%} id="link" style="font-size: 200%;">🡄 Volver</a></div>
+   </div>
+
+    <div class="text-center "><img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></img></div>
+
+
+    <div class="row">
+    <div class="col-sm-12 col-md-6 ">
+    {%for i in idepto%}
+        {%if i.img%}
+        <img src="data:img/jpg;base64, {{i.img}}" class="card-img-top" alt="...">
+        {%endif%}
+         </div>
+        <div class="col">
+    <div class="card">
+      
+      <div class="card-body">
+      <form method="POST" action="" autocomplete="off" enctype="multipart/form-data">
+        {% csrf_token %}
+      <p class="card-text">{{i.data.zonas_id_zonas}} {{form2.zonas}}</p>
+        <p class="card-text">Dirección: <input type="text" id="direccion" name="direccion" value="{{i.data.direccion}}" required></p>
+        <p class="card-text">{{i.data.std_depto_id_stdo_depto}} {{form.estado}}</p>
+        <p class="card-text">Descripción: <input type="text" id="descripcion" name="descripcion" value="{{i.data.descripcion}}" required></p>
+        <p class="card-text"> Metros Cuadrados: <input type="number" id="metros_cua" name="metros_cua" value="{{i.data.metros_cua}}" min="1" max="500" required></p>
+        {%for i.data.inventario_id_inventario in idepto|slice:":1"%}
+        <p class="card-text"> Habitacion(es):<input type="number" id="habitacion" name="habitacion" value="{{i.data.inventario_id_inventario.habitacion}}"  min="0" max="5" required> | 
+         Cama(s): <input type="number" id="cama" name="cama" value="{{i.data.inventario_id_inventario.camas}}"  min="0" max="5" required> | Baño(s): <input type="number" id="bano" name="bano" value="{{i.data.inventario_id_inventario.baños}}" min="0" max="5" required></p>
+        <p class="card-text">Incluido en Inventario: <input type="text" id="incluido" name="incluido" value="{{i.data.inventario_id_inventario.incluido}}" required></p>
+        {%endfor%}
+        <p class="card-text">Precio: $<input type="number" id="precio" name="precio"  value="{{i.data.precio}}" min="1" max="9999999" required>/Día. - </p>
+        Imagen: <input type="file" id="imagen" name="imagen" accept="image/*" onchange="ICheck()"><br>
+        <input type="hidden" id="change" name="change" value="False">
+        <input type="submit" name="Editar" value="Editar" id="button">
+      </form>
+    </div>
+    {%endfor%}
+<script>
+  function ICheck() {
+    if( document.getElementById("imagen").files.length == 0 ){
+      document.getElementById("change").value="False";
+    }else{ document.getElementById("change").value="True";}
+  }
+</script>
+
+{% endblock  %}
+

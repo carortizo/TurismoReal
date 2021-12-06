@@ -79,6 +79,7 @@ class Departamento(models.Model):
     def __str__(self):
         return self.direccion
     
+    
     class Meta:
         managed = False
         db_table = 'departamento'
