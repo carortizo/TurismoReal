@@ -44,7 +44,7 @@ def checker(request):
     if idrer.count()>0:
         idrer.aggregate(Max('id_registro_arri'))
         idrer=idrer.order_by('-id_registro_arri')[0]
-        idr=(int(idrer)+1)
+        idr=(int(idrer.id_registro_arri)+1)
     else:
         idr=1
     idp=Personal.objects.get(correo=request.user.username)
@@ -52,15 +52,17 @@ def checker(request):
         estado=request.POST.get('deptostd')
         multa=request.POST.get('multa')
         total=(int(multa)+int((reserva.subtotal)))
-        reserva.multa=multa
-        reserva.save()
+
         
         checkers=CheckIn.objects.get(registro_pago_id_reg_pago=(RegistroPago.objects.get(reservas_id_reservas=reserva)))
         RegistroArri.objects.create(id_registro_arri=idr,descripcion=estado,pago_total=total,check_in_id_check_in=checkers)
         rp=RegistroArri.objects.get(id_registro_arri=idr)
         CheckOut.objects.create(id_check_out=idc,descripcion=estado,multa=multa,registro_arri_id_registro_arri=rp,personal_id_personal=idp)
-        dep=Departamento.objects.get(id_depto=reserva.departamento_id_depto)
+        dep=Departamento.objects.get(id_depto=reserva.departamento_id_depto.id_depto)
         dep.std_depto_id_stdo_depto=StdDepto.objects.get(id_stdo_depto=1)
+        dep.save()
+        reserva.multa=multa
+        reserva.save()
         return redirect('checkout')
     
     context={"reserva":reserva}
@@ -74,6 +76,11 @@ def checkout(request):
     arregloregi=[]
     for i in regi:
        arregloregi.append(i.check_in_id_check_in.registro_pago_id_reg_pago.reservas_id_reservas.id_reservas)
+
+    #regi2=RegistroPago.objects.all()
+    #arregloregi2=[]
+    #for i in regi2:
+       #arregloregi2.append(i.reservas_id_reservas.id_reservas)
 
     deptos= Reservas.objects.filter().exclude(id_reservas__in=arregloregi)
     cliente=Cliente.objects.all()
@@ -526,18 +533,32 @@ def home(request):
         return redirect('arriendo')
     elif request.method == 'POST' and 'cancelar'in request.POST:
         cancelar=request.POST.get('cancelar')
-        canceler=Reservas.objects.get(id_reservas=cancelar)
-        ServicioExtra.objects.filter(reservas_id_reservas=canceler).delete()
-        obj=Departamento.objects.get(id_depto=canceler.departamento_id_depto.id_depto)
-        obj.std_depto_id_stdo_depto=StdDepto.objects.get(id_stdo_depto=1)
-        Reservas.objects.filter(id_reservas=cancelar).delete()
-        obj.save()
+        regis2=RegistroPago.objects.all()
+        arregloregis2=[]
+        for i in regis2:
+            arregloregis2.append(i.reservas_id_reservas.id_reservas)
+
+        if Reservas.objects.all().filter(id_reservas=cancelar).exclude(id_reservas__in=arregloregis2).count()>0:
+            canceler=Reservas.objects.get(id_reservas=cancelar)
+            ServicioExtra.objects.filter(reservas_id_reservas=canceler).delete()
+            obj=Departamento.objects.get(id_depto=canceler.departamento_id_depto.id_depto)
+            obj.std_depto_id_stdo_depto=StdDepto.objects.get(id_stdo_depto=1)
+            Reservas.objects.filter(id_reservas=cancelar).delete()
+            obj.save()
             
         return redirect('home')
     elif request.method == 'POST' and 'editar'in request.POST:
         editar=request.POST.get('editar')
-        request.session['editar']= editar
-        return redirect('editar')
+        regis2=RegistroPago.objects.all()
+        arregloregis2=[]
+        for i in regis2:
+            arregloregis2.append(i.reservas_id_reservas.id_reservas)
+
+        if Reservas.objects.all().filter(id_reservas=editar).exclude(id_reservas__in=arregloregis2).count()>0:
+            request.session['editar']= editar
+            return redirect('editar')
+        else:
+            return redirect('home')
 
     return render(request,'core/pages/home.html',{'deptos':arreglo,'reserv':reserv,'reserv2':arreglo2,'reserv3':reserv3})
 
@@ -606,7 +627,7 @@ def editar(request):
     
     deptos2= Departamento.objects.all().filter(id_depto= (resv))
     reserv2=Reservas.objects.all().filter(id_reservas=idres)
-    servi=ServicioExtra.objects.all().filter(id_servextra=editar)
+    servi=ServicioExtra.objects.all().filter(reservas_id_reservas=editar)
     inv=Inventario.objects.all()
     arreglo=[]
     for i in deptos2:

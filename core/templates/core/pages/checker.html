@@ -28,7 +28,7 @@
         <form method="POST" action="" autocomplete="off" id="Checkear">
           {% csrf_token %}
           Estado depto. al devolver: <input type="text" id="deptostd" name="deptostd" required><br><br>
-          Multa: <input type="number" id="multa" name="multa" min="0" max="999999999"  required><br><br>
+          Multa: <input type="number" id="multa" name="multa" min="0" max="999999999" value="0" required><br><br>
           <input type="submit" name="Checkear" value="Checkear" id="button">
         </form>
       </div>
