@@ -30,9 +30,9 @@
     <div class="row">
       <div class="col-md">
       
-        <div class="card card-body">
+        <div class="card card-body" style="overflow:auto;">
           <a href={%url 'newdepto'%}><button class="btn" id="button" style="color:white;width: 100%;">Añadir Departamento</button></a>
-          <table class="table">
+          <table class="table " style="overflow:hidden;">
             <tr>
               <th>Zona</th>
               <th>Direccion</th>
@@ -52,7 +52,7 @@
                       </form></td>
                 </tr>
               {%endfor%}
-              </table>
+          </table>
             </div>
           </div>
         </div>

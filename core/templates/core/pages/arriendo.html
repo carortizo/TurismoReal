@@ -12,16 +12,16 @@
     </div></div>
     <div class="text-center "><img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></div>
     <div>&emsp;
-    <a href={%url 'home'%} id="link" ><img id="logo2" class="img-fluid" src="{% static '/img/arrow.png'%}" alt=""></a></div><br>
+      <a href={%url 'home'%} id="link" ><img id="logo2" class="img-fluid" src="{% static '/img/arrow.png'%}" alt=""></a></div><br>
     <div class="row">
     <div class="col-sm-12 col-md-6 ">
     {%for i in deptos%}
           {%if i.img%}
-        <img src="data:img/jpg;base64, {{i.img}}" class="img-fluid" alt="...">
+        <img src="data:img/jpg;base64, {{i.img}}" class="card-img-top" alt="...">
         {%endif%}
         </div>
         <div class="col">
-    <div class="card">
+    <div class="card text-center">
 
       <div class="card-body">
       <h5 class="card-title">{{i.data.zonas_id_zonas}}</h5>
