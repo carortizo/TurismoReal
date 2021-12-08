@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Informe</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+    <style>
+        .img-invoice {
+            width: 50px;
+            text-align: center;
+            margin: 0 auto;
+        }
+    
+        .head {
+            text-align: center;
+            text-transform: uppercase;
+        }
+    
+        #invoice thead tr th {
+            text-align: left;
+            border-bottom: 1px solid black;
+            border-top: 1px solid black;
+            padding-top: 4px;
+        }
+    
+        #invoice thead tr {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+    
+        #invoice tbody tr {
+            padding: 0;
+        }
+    
+        .text-center{
+            text-align: center;
+        }
+    </style>
+    <body>
+    <p class="head">
+       TURISMO REAL
+    </p>
+    <p>
+        <b>GENERADO POR: {{usuario}}</b> <br>
+        <b>FECHA:{{date}}</b> <br>
+    </p>
+    <table id="invoice">
+        <thead>
+        <tr>
+            <th class="text-center">ZONA</th>
+            <th class="text-center">DIRECCION</th>
+            <th class="text-center">PRECIO</th>
+            <th class="text-center">MULTA</th>
+            <th class="text-center">FECHA PAGO</th>
+        </tr>
+        </thead>
+        <tbody>
+            {%for i in out%}
+            <tr>
+                <td class="text-center">{{i.registro_arri_id_registro_arri.check_in_id_check_in.registro_pago_id_reg_pago.reservas_id_reservas.departamento_id_depto.zonas_id_zonas}}</td>
+                <td class="text-center">{{i.registro_arri_id_registro_arri.check_in_id_check_in.registro_pago_id_reg_pago.reservas_id_reservas.departamento_id_depto.direccion}}</td>
+                <td class="text-center">{{i.registro_arri_id_registro_arri.pago_total}}</td>
+                <td class="text-center">{{i.multa}}</td>
+                <td class="text-center">{{i.registro_arri_id_registro_arri.check_in_id_check_in.registro_pago_id_reg_pago.reservas_id_reservas.fecha_salida}}</td>
+                
+            </tr>
+          {%endfor%}
+
+        <tr style="border-top: 1px solid black; padding-top: 4px;">
+            
+        </tr>
+        <tr style="padding-top: 0px;">
+
+        </tr>
+        <tr style="padding-top: 0px;">
+            <td colspan="4"><b></b></td>
+            <td style="text-align: right" ></td>
+        </tr>
+        </tbody>
+    </table>
+    <table style="margin-top: 250px;">
+        <thead>
+        <tr>
+            <th>INFORME ARRIENDOS</th>
+        </tr>
+        <tr>
+            <th>SOLO PARA USO INTERNO DE TURISMO REAL</th>
+        </tr>
+        </thead>
+    </table>
+    </body>
+    </html>

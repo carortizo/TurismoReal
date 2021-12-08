@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'core',
     'pwa',
     'django_filters',
+    'xhtml2pdf',
 ]
 
 MIDDLEWARE = [

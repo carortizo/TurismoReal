@@ -1,0 +1,62 @@
+
+{% extends 'core/main.html' %}
+{% load static %}
+{% block content %}
+
+<br>
+    
+<div class="container">
+  <div class="row"> 
+    <div class="col-11">
+      <h2 id="account">👤 Admin {{request.user}} </h2>
+    </div>
+    <div class="col-1">
+      <a href={%url 'logout'%}><img  class=" media" src="{% static '/img/powerverysmallwhite.png'%}"></img></a>
+    </div>
+  </div>
+  <div>&emsp;
+    <a href={%url 'admins'%} id="link" ><img id="logo2" class="img-fluid" src="{% static '/img/arrow.png'%}" alt=""></a></div><br>
+</div>
+  <div class="text-center ">
+    <img id="logo2" class="img-fluid" src="{% static '/img/iconwhite.png'%}" alt=""></img>
+  </div>
+  <div class="container text-center ">
+    <form method="get">
+      {{myFilter.form}}
+      <button class="btn btn-primary" type="submit" id="button">Buscar</button>
+    </form><br>
+
+    <div class="card">
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <button class="btn btn-primary" type="submit" id="button">Informe</button>
+        </form><br>
+        <table class="table">
+          <tr>
+            <th>Zona</th>
+            <th>Direccion</th>
+            <th>Precio</th>
+            <th>Multa</th>
+            <th>Fecha Pago</th>
+          </tr>
+            {%for i in out%}
+              <tr>
+                  <td>{{i.registro_arri_id_registro_arri.check_in_id_check_in.registro_pago_id_reg_pago.reservas_id_reservas.departamento_id_depto.zonas_id_zonas}}</td>
+                  <td>{{i.registro_arri_id_registro_arri.check_in_id_check_in.registro_pago_id_reg_pago.reservas_id_reservas.departamento_id_depto.direccion}}</td>
+                  <td>{{i.registro_arri_id_registro_arri.pago_total}}</td>
+                  <td>{{i.multa}}</td>
+                  <td>{{i.registro_arri_id_registro_arri.check_in_id_check_in.registro_pago_id_reg_pago.reservas_id_reservas.fecha_salida}}</td>
+                  
+              </tr>
+            {%endfor%}
+            </table>
+      </div>
+    </div>
+  </div>
+  
+
+{% endblock  %}
+
+
+    

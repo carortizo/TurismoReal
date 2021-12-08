@@ -1,6 +1,7 @@
 from django.urls import path
 from django.urls.conf import include
 from . import views
+#from .views import pdfView
 
 urlpatterns = [
     path('', views.loginPage, name="login"),
@@ -10,6 +11,7 @@ urlpatterns = [
     path('admins/', views.adminHome, name="admins"),
     path('newdepto/', views.newdepto, name="newdepto"),
     path('edepto/', views.edepto, name="edepto"),
+    path('inform/', views.inform, name="inform"),
     path('func/', views.funcHome, name="func"),
     path('checkin/', views.checkin, name="checkin"),
     path('check/', views.check, name="check"),
@@ -20,5 +22,6 @@ urlpatterns = [
     path('pswd/', views.pswd, name="pswd"),
     path('arriendo/', views.arriendo,name="arriendo"),
     path('editar/', views.editar,name="editar"),
+    #path('pdf/', views.pdf, name='pdf'),
     path('', include('pwa.urls')),
 ]

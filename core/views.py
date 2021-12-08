@@ -1,3 +1,4 @@
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
@@ -6,6 +7,7 @@ from datetime import date
 from datetime import datetime
 from django.db.models import Q
 from .filters import DepartamentoFilter
+from .filters import CheckOutFilter
 from django.db.models import Max
 import cx_Oracle
 
@@ -15,6 +17,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required
+
+from django.views import View
+import os
+from django.conf import settings
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.contrib.staticfiles import finders
 
 from .models import *
 from .forms import CreateUserForm, EstadoForm, ReservaForm, ZonaForm
@@ -175,6 +184,32 @@ def checkin(request):
 @allowed_users(allowed_roles=['func'])
 def funcHome(request):
     return render(request,'core/pages/func.html')
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
+def inform(request):
+    out= CheckOut.objects.all()
+    myFilter = CheckOutFilter(request.GET, queryset=out)
+    out=myFilter.qs
+    usuario=request.user.username.upper()
+    date=str(datetime.date(datetime.today())).upper()
+    context={"out":out,"myFilter":myFilter,'usuario':usuario,'date':date}
+    if request.method == 'POST':
+        template= get_template('core/pages/pdf.html')
+        
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+
+        html = template.render(context)
+            
+            # create a pdf
+        pisa_status = pisa.CreatePDF(
+        html, dest=response)
+            # if error then show some funy view
+        return response
+    return render(request,'core/pages/inform.html',context)
 
 #Edición de departamentos
 @login_required(login_url='login')
@@ -639,6 +674,28 @@ def editar(request):
         arreglo.append(data)
     
     return render(request,'core/pages/editar.html',{'deptos2':arreglo,'inv':inv,'form':form,'reserv2':reserv2,"servi":servi})
+
+
+
+
+#def pdf(request):
+#    try:
+#        template= get_template('core/pages/pdf.html')
+#        context = {'title': 'pdf'}
+#        response = HttpResponse(content_type='application/pdf')
+        #response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+
+#        html = template.render(context)
+            
+            # create a pdf
+#        pisa_status = pisa.CreatePDF(
+#        html, dest=response)
+#            # if error then show some funy view
+#        return response
+#    except:
+#        pass
+#    return redirect('admins')
+
 
 
 
